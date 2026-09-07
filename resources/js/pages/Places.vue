@@ -20,6 +20,7 @@
           {{ value ? "Active" : "Inactive" }}
         </span>
       </template>
+      <template #cell:branch_name="{ value }">{{ value || "—" }}</template>
       <template #actions="{ row }">
         <button v-if="can('places.update')" class="ui-btn ui-btn--ghost ui-btn--sm" @click="editPlace(row)">Edit</button>
         <button v-if="can('places.delete')" class="ui-btn ui-btn--danger ui-btn--sm" @click="deletePlace(row.id)">Delete</button>
@@ -30,6 +31,10 @@
 
     <Modal v-model="showModal" :title="form.id ? 'Edit Place' : 'Add Place'">
       <FormField v-model="form.name" label="Name" placeholder="Name" :error="form.errors.name" />
+      <FormField v-model="form.branch_id" label="Branch" type="select" :error="form.errors.branch_id">
+        <option value="">— select branch —</option>
+        <option v-for="branch in props.branches" :key="branch.id" :value="branch.id">{{ branch.name }}</option>
+      </FormField>
       <FormField v-model="form.status" label="Status" type="select" :error="form.errors.status">
         <option :value="true">Active</option>
         <option :value="false">Inactive</option>
@@ -61,10 +66,12 @@ const props = defineProps({
   // Laravel paginator: { data, links, from, to, total, current_page, ... }.
   places: { type: Object, default: () => ({ data: [] }) },
   filters: { type: Object, default: () => ({ search: "" }) },
+  branches: { type: Array, default: () => [] },
 });
 
 const columns = [
   { key: "name", label: "Name" },
+  { key: "branch_name", label: "Branch" },
   { key: "status", label: "Status" },
 ];
 
@@ -87,7 +94,7 @@ watch(search, (value) => {
 });
 
 const showModal = ref(false);
-const form = useForm({ id: null, name: "", status: true });
+const form = useForm({ id: null, name: "", branch_id: "", status: true });
 
 const openModal = () => {
   form.reset();
@@ -98,6 +105,7 @@ const openModal = () => {
 const editPlace = (p) => {
   form.id = p.id;
   form.name = p.name;
+  form.branch_id = p.branch_id ?? "";
   form.status = !!Number(p.status);
   form.clearErrors();
   showModal.value = true;

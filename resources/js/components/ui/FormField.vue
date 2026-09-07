@@ -7,6 +7,7 @@
       v-if="type === 'select'"
       :id="fieldId"
       class="ui-select"
+      :multiple="multiple"
       :value="modelValue"
       @change="$emit('update:modelValue', castOption($event.target))"
     >
@@ -51,6 +52,7 @@ const props = defineProps({
   placeholder: { type: String, default: "" },
   step: { type: String, default: null },
   readonly: { type: Boolean, default: false },
+  multiple: { type: Boolean, default: false },
   error: { type: String, default: "" },
 });
 
@@ -63,6 +65,10 @@ const fieldId = computed(
 
 // Preserve boolean option values coming from <option :value="true">.
 function castOption(el) {
+  if (props.multiple) {
+    return Array.from(el.selectedOptions).map((option) => option.value);
+  }
+
   const opt = el.options[el.selectedIndex];
   const raw = opt?.getAttribute("value") ?? el.value;
   if (raw === "true") return true;

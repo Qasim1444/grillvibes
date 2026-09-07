@@ -16,10 +16,17 @@ class Branch extends Model
         'phone',
         'manager_name',
         'status',
+        'latitude',
+        'longitude',
+        'attendance_radius_meters',
+        'attendance_start_time',
     ];
 
     protected $casts = [
         'status' => 'boolean',
+        'latitude' => 'decimal:7',
+        'longitude' => 'decimal:7',
+        'attendance_radius_meters' => 'integer',
     ];
 
     /** Seating areas that belong to this outlet. */

@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\BranchController;
+use App\Http\Controllers\Web\BlogController;
 use App\Http\Controllers\Web\CRM\DiscountCampaignController;
 use App\Http\Controllers\Web\CRM\FeedbackController;
 use App\Http\Controllers\Web\CRM\LoyaltyController;
@@ -104,6 +105,8 @@ Route::middleware('auth')->group(function () {
     // authenticated user may still scope their own UI to an outlet (topbar).
     Route::post('/branches/switch', [BranchController::class, 'switch'])
         ->name('branches.switch');
+    Route::put('/branches/{id}/attendance-settings', [BranchController::class, 'updateAttendanceSettings'])
+        ->middleware('can.access:branches.update')->name('branches.attendance-settings');
 
     // Food Categories
     Route::get('/food-categories', [FoodCategoryController::class, 'index'])
@@ -124,6 +127,28 @@ Route::middleware('auth')->group(function () {
         ->middleware('can.access:food-items.update')->name('food-items.update');
     Route::delete('/food-items/{id}', [FoodItemController::class, 'destroy'])
         ->middleware('can.access:food-items.delete')->name('food-items.destroy');
+
+    // Blog posts
+    Route::get('/blog', [BlogController::class, 'index'])
+        ->middleware('can.access:blog.view')->name('blog.index');
+    Route::post('/blog', [BlogController::class, 'store'])
+        ->middleware('can.access:blog.create')->name('blog.store');
+    Route::put('/blog/{id}', [BlogController::class, 'update'])
+        ->middleware('can.access:blog.update')->whereNumber('id')->name('blog.update');
+    Route::delete('/blog/{id}', [BlogController::class, 'destroy'])
+        ->middleware('can.access:blog.delete')->whereNumber('id')->name('blog.destroy');
+    Route::post('/blog/categories', [BlogController::class, 'storeCategory'])
+        ->middleware('can.access:blog.create')->name('blog.categories.store');
+    Route::put('/blog/categories/{id}', [BlogController::class, 'updateCategory'])
+        ->middleware('can.access:blog.update')->whereNumber('id')->name('blog.categories.update');
+    Route::delete('/blog/categories/{id}', [BlogController::class, 'destroyCategory'])
+        ->middleware('can.access:blog.delete')->whereNumber('id')->name('blog.categories.destroy');
+    Route::post('/blog/tags', [BlogController::class, 'storeTag'])
+        ->middleware('can.access:blog.create')->name('blog.tags.store');
+    Route::put('/blog/tags/{id}', [BlogController::class, 'updateTag'])
+        ->middleware('can.access:blog.update')->whereNumber('id')->name('blog.tags.update');
+    Route::delete('/blog/tags/{id}', [BlogController::class, 'destroyTag'])
+        ->middleware('can.access:blog.delete')->whereNumber('id')->name('blog.tags.destroy');
 
     // Users
     Route::get('/users', [UserController::class, 'index'])
@@ -204,6 +229,10 @@ Route::middleware('auth')->group(function () {
             ->middleware('can.access:hr.attendance.view')->name('attendance.index');
         Route::post('/attendance/bulk', [AttendanceController::class, 'bulkStore'])
             ->middleware('can.access:hr.attendance.create')->name('attendance.bulk');
+        Route::get('/attendance/punch', [AttendanceController::class, 'punchPage'])
+            ->name('attendance.punch.page');
+        Route::post('/attendance/punch', [AttendanceController::class, 'punch'])
+            ->middleware('throttle:10,1')->name('attendance.punch');
         Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])
             ->middleware('can.access:hr.attendance.delete')->name('attendance.destroy');
 

@@ -40,6 +40,24 @@
       You have unsaved changes on this sheet — click <strong>Save Sheet</strong> before switching dates.
     </div>
 
+    <div v-if="can('branches.update')" class="att__settings ui-card ui-card-pad">
+      <div>
+        <strong>Branch attendance locations</strong>
+        <p class="att__hint">Each employee is checked against the branch assigned to their place.</p>
+      </div>
+      <div v-for="branch in branchForms" :key="branch.id" class="att__settings-row">
+        <strong>{{ branch.name }}</strong>
+        <input v-model="branch.latitude" class="ui-input" type="number" step="0.0000001" min="-90" max="90" placeholder="Latitude" />
+        <input v-model="branch.longitude" class="ui-input" type="number" step="0.0000001" min="-180" max="180" placeholder="Longitude" />
+        <input v-model.number="branch.attendance_radius_meters" class="ui-input att__num" type="number" min="10" max="5000" title="Allowed radius in meters" />
+        <input v-model="branch.attendance_start_time" class="ui-input" type="time" title="Shift start time" />
+        <button class="ui-btn ui-btn--ghost ui-btn--sm" :disabled="branch.saving" @click="saveBranch(branch)">
+          {{ branch.saving ? "Saving…" : "Save" }}
+        </button>
+      </div>
+      <p v-if="!branchForms.length" class="att__hint">No branches have been configured.</p>
+    </div>
+
     <div class="stat-grid">
       <StatCard :label="`Present (${props.monthSummary.month})`" :value="props.monthSummary.present" />
       <StatCard :label="`Absent (${props.monthSummary.month})`" :value="props.monthSummary.absent" />
@@ -71,10 +89,16 @@
         </select>
       </template>
       <template #cell:check_in="{ row }">
-        <input v-model="row.check_in" class="ui-input att__time" type="time" :disabled="!editable" />
+        <div class="att__event">
+          <input v-model="row.check_in" class="ui-input att__time" type="time" :disabled="!editable" />
+          <small v-if="row.check_in_distance_meters !== null" class="att__verified">GPS {{ row.check_in_distance_meters }}m</small>
+        </div>
       </template>
       <template #cell:check_out="{ row }">
-        <input v-model="row.check_out" class="ui-input att__time" type="time" :disabled="!editable" />
+        <div class="att__event">
+          <input v-model="row.check_out" class="ui-input att__time" type="time" :disabled="!editable" />
+          <small v-if="row.check_out_distance_meters !== null" class="att__verified">GPS {{ row.check_out_distance_meters }}m</small>
+        </div>
       </template>
       <template #cell:late_minutes="{ row }">
         <input
@@ -122,6 +146,7 @@ const props = defineProps({
   statuses: { type: Array, default: () => [] },
   filters: { type: Object, default: () => ({ search: "" }) },
   monthSummary: { type: Object, default: () => ({ month: "", present: 0, absent: 0, leave: 0, marked_days: 0 }) },
+  branches: { type: Array, default: () => [] },
 });
 
 const editable = computed(() => can("hr.attendance.create"));
@@ -142,6 +167,7 @@ const sheet = ref(clone(props.roster));
 const baseline = ref(JSON.stringify(sheet.value));
 const saving = ref(false);
 const date = computed(() => props.date);
+const branchForms = ref(props.branches.map((branch) => ({ ...branch, saving: false })));
 
 watch(
   () => props.roster,
@@ -190,6 +216,16 @@ const saveSheet = () => {
 const clearRow = (row) => {
   if (!confirm(`Remove the saved attendance entry for ${row.name}?`)) return;
   router.delete(`/hr/attendance/${row.attendance_id}`, { preserveScroll: true });
+};
+
+const saveBranch = (branch) => {
+  branch.saving = true;
+  router.put(`/branches/${branch.id}/attendance-settings`, {
+    latitude: branch.latitude || null,
+    longitude: branch.longitude || null,
+    attendance_radius_meters: branch.attendance_radius_meters,
+    attendance_start_time: branch.attendance_start_time || null,
+  }, { preserveScroll: true, onFinish: () => (branch.saving = false) });
 };
 
 const label = (s) => (s ? s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()) : "—");
@@ -253,9 +289,39 @@ const badgeClass = (s) =>
   font-size: 0.82rem;
 }
 
+.att__event {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.att__verified {
+  color: var(--success, #16803c);
+  font-size: 0.7rem;
+}
+
 .att__unsaved {
   font-size: 0.75rem;
   color: var(--text-muted);
+}
+
+.att__settings {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.att__hint {
+  margin: 4px 0 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.att__settings-row {
+  display: grid;
+  grid-template-columns: minmax(120px, 1.2fr) repeat(4, minmax(100px, 1fr)) auto;
+  align-items: center;
+  gap: 8px;
 }
 
 @media (max-width: 980px) {
@@ -264,6 +330,9 @@ const badgeClass = (s) =>
   }
   .att__tallies {
     margin-left: 0;
+  }
+  .att__settings-row {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 </style>

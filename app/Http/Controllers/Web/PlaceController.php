@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\Place;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,13 +21,21 @@ class PlaceController extends Controller
         $search = trim((string) $request->query('search', ''));
 
         $places = Place::query()
+            ->with('branch:id,name')
             ->when($search !== '', fn ($q) => $q->where('name', 'like', "%{$search}%"))
             ->orderBy('name')
             ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('Places', [
-            'places' => $places,
+            'places' => $places->through(fn (Place $place) => [
+                'id' => $place->id,
+                'name' => $place->name,
+                'branch_id' => $place->branch_id,
+                'branch_name' => $place->branch?->name,
+                'status' => $place->status,
+            ]),
+            'branches' => Branch::query()->orderBy('name')->get(['id', 'name']),
             'filters' => ['search' => $search],
         ]);
     }
@@ -56,6 +65,7 @@ class PlaceController extends Controller
     {
         return [
             'name' => 'required|string|max:255',
+            'branch_id' => 'required|exists:branches,id',
             'status' => 'required|boolean',
         ];
     }

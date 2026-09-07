@@ -3,18 +3,21 @@
 namespace Tests\Feature;
 
 use App\Models\Attendance;
+use App\Models\Branch;
 use App\Models\Deduction;
 use App\Models\Designation;
 use App\Models\Leave;
 use App\Models\LeaveType;
 use App\Models\Loan;
 use App\Models\Overtime;
+use App\Models\Place;
 use App\Models\PayrollRun;
 use App\Models\Role;
 use App\Models\User;
 use App\Services\PayrollService;
 use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 /**
@@ -123,6 +126,69 @@ class HRModuleTest extends TestCase
 
         $this->assertSame(1, Attendance::where('user_id', $b->id)->count());
         $this->assertSame('present', Attendance::where('user_id', $b->id)->value('status'));
+    }
+
+    public function test_employee_punches_in_and_out_only_inside_their_branch_geofence(): void
+    {
+        $branch = Branch::create([
+            'name' => 'Main Branch',
+            'latitude' => 24.8607,
+            'longitude' => 67.0011,
+            'attendance_radius_meters' => 100,
+            'attendance_start_time' => '09:00',
+        ]);
+        $place = Place::create(['branch_id' => $branch->id, 'name' => 'Main Floor', 'status' => true]);
+        $employee = $this->employee(['place_id' => $place->id]);
+
+        Carbon::setTestNow('2026-09-04 10:15:00');
+        $this->actingAs($employee)->post('/hr/attendance/punch', [
+            'latitude' => 24.8607,
+            'longitude' => 67.0011,
+            'accuracy' => 150,
+        ])->assertRedirect();
+
+        $attendance = Attendance::where('user_id', $employee->id)->firstOrFail();
+        $this->assertSame('late', $attendance->status);
+        $this->assertSame(75, $attendance->late_minutes);
+        $this->assertSame(0, $attendance->check_in_distance_meters);
+
+        Carbon::setTestNow('2026-09-04 18:00:00');
+        $this->actingAs($employee)->post('/hr/attendance/punch', [
+            'latitude' => 24.8607,
+            'longitude' => 67.0011,
+            'accuracy' => 15,
+        ])->assertRedirect();
+
+        $this->assertSame('18:00:00', Attendance::find($attendance->id)->check_out);
+        $this->assertSame(465, Attendance::find($attendance->id)->worked_minutes);
+
+        $this->actingAs($employee)->post('/hr/attendance/punch', [
+            'latitude' => 24.8700,
+            'longitude' => 67.0011,
+            'accuracy' => 12,
+        ])->assertSessionHasErrors('location');
+
+        $this->assertSame(1, Attendance::where('user_id', $employee->id)->count());
+        Carbon::setTestNow();
+    }
+
+    public function test_an_authorized_user_can_update_branch_attendance_location(): void
+    {
+        $admin = $this->superAdmin();
+        $branch = Branch::create(['name' => 'Configurable Branch']);
+
+        $this->actingAs($admin)->put("/branches/{$branch->id}/attendance-settings", [
+            'latitude' => 30,
+            'longitude' => 72,
+            'attendance_radius_meters' => 250,
+            'attendance_start_time' => '09:30',
+        ])->assertRedirect();
+
+        $saved = Branch::findOrFail($branch->id);
+        $this->assertSame(30.0, (float) $saved->latitude);
+        $this->assertSame(72.0, (float) $saved->longitude);
+        $this->assertSame(250, $saved->attendance_radius_meters);
+        $this->assertSame('09:30', substr((string) $saved->attendance_start_time, 0, 5));
     }
 
     public function test_approved_overtime_is_locked_against_edits(): void

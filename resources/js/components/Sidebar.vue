@@ -105,6 +105,12 @@ const groups = [
     ],
   },
   {
+    title: "Content",
+    items: [
+      { to: "/blog", label: "Blog Posts", icon: icon.clipboard, permission: "blog.view" },
+    ],
+  },
+  {
     title: "Inventory",
     items: [
       { to: "/inventory/ingredients", label: "Ingredients",   icon: icon.box,       permission: "inventory.ingredients.view" },

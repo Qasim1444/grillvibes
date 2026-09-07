@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Support\CurrentBranch;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,5 +25,20 @@ class BranchController extends Controller
         CurrentBranch::set((int) $data['branch_id']);
 
         return back()->with('success', 'Switched outlet.');
+    }
+
+    /** Update the branch geofence used by employee attendance punches. */
+    public function updateAttendanceSettings(Request $request, int $id): RedirectResponse
+    {
+        $data = $request->validate([
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+            'attendance_radius_meters' => ['required', 'integer', 'min:10', 'max:5000'],
+            'attendance_start_time' => ['nullable', 'date_format:H:i'],
+        ]);
+
+        Branch::findOrFail($id)->update($data);
+
+        return back()->with('success', 'Attendance location updated.');
     }
 }
