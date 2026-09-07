@@ -243,12 +243,12 @@
     "/build/assets/QRMenu-9brZ7jtD.css"
   ],
   "resources/js/pages/HR/Attendance.vue": [
-    "/build/assets/Attendance-BJsliXOB.js",
-    "/build/assets/Attendance-5cRIYpA1.css"
+    "/build/assets/Attendance-DQOAO2Ic.js",
+    "/build/assets/Attendance-DplkYn4Y.css"
   ],
-  "resources/js/pages/HR/Attendance.vue?vue&type=style&index=0&scoped=c6f95a59&lang.css": [
-    "/build/assets/Attendance-BJsliXOB.js",
-    "/build/assets/Attendance-5cRIYpA1.css"
+  "resources/js/pages/HR/Attendance.vue?vue&type=style&index=0&scoped=165431b8&lang.css": [
+    "/build/assets/Attendance-DQOAO2Ic.js",
+    "/build/assets/Attendance-DplkYn4Y.css"
   ],
   "resources/js/pages/HR/AttendancePunch.vue": [
     "/build/assets/AttendancePunch-BScvwMQC.js",
@@ -464,12 +464,12 @@
     "/build/assets/FloorPlan-CmBVjElq.css"
   ],
   "resources/js/pages/Reservations/Index.vue": [
-    "/build/assets/Index-u725s_LA.js",
-    "/build/assets/Index-ChCW5_3u.css"
+    "/build/assets/Index-CZdxgpL8.js",
+    "/build/assets/Index-2Vem8KNc.css"
   ],
-  "resources/js/pages/Reservations/Index.vue?vue&type=style&index=0&scoped=204afcf2&lang.css": [
-    "/build/assets/Index-u725s_LA.js",
-    "/build/assets/Index-ChCW5_3u.css"
+  "resources/js/pages/Reservations/Index.vue?vue&type=style&index=0&scoped=56cfbf05&lang.css": [
+    "/build/assets/Index-CZdxgpL8.js",
+    "/build/assets/Index-2Vem8KNc.css"
   ],
   "resources/js/pages/Roles.vue": [
     "/build/assets/Roles-DEStqoiE.js",

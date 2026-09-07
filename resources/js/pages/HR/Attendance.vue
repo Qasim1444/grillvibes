@@ -167,7 +167,15 @@ const sheet = ref(clone(props.roster));
 const baseline = ref(JSON.stringify(sheet.value));
 const saving = ref(false);
 const date = computed(() => props.date);
-const branchForms = ref(props.branches.map((branch) => ({ ...branch, saving: false })));
+const formatCoordinate = (value) => (value === null || value === "" ? value : Number(value).toFixed(17));
+const branchForms = ref(
+  props.branches.map((branch) => ({
+    ...branch,
+    latitude: formatCoordinate(branch.latitude),
+    longitude: formatCoordinate(branch.longitude),
+    saving: false,
+  }))
+);
 
 watch(
   () => props.roster,

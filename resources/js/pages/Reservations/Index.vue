@@ -183,7 +183,7 @@ const showModal = ref(false);
 const form = useForm({
   id: null, dining_table_id: '', branch_id: '', guest_name: '', guest_phone: '',
   guest_email: '', party_size: 2, reserved_at: '', duration_minutes: 90,
-  status: 'confirmed', occasion: '', notes: '', source: 'phone',
+  status: 'confirmed', occasion: '', notes: '', source: 'walk_in',
 });
 
 // Default new records to the branch in the filter, or the only branch when there is one.
