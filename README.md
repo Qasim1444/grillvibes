@@ -1,124 +1,100 @@
-# KitchenOS Backend API & Admin Dashboard
+# KitchenOS
 
-A restaurant management platform built with **Laravel 12** and a **Vue 3** single-page admin dashboard. It exposes a REST API (used by external clients such as a POS/ordering app) and ships an integrated web dashboard for managing food menus, inventory, orders, customers, users, and reports.
+KitchenOS is a restaurant operations platform for running the complete service cycle from one workspace: menu and order management, point of sale, kitchen production, inventory, purchasing, people operations, finance, guest ordering, and reporting.
 
-## Overview
+## What the app covers
 
-The project combines two layers in one codebase:
+- **Front of house** — POS, orders, customers, branches, dining tables, reservations, QR menus, and kiosk ordering.
+- **Kitchen operations** — kitchen display stations, live ticket boards, preparation workflows, food items, categories, recipes, and food-cost reporting.
+- **Inventory and procurement** — ingredients, stock, recipes, vendors, purchase orders, and goods receipts.
+- **People and finance** — employees, attendance, leave, overtime, loans, payroll, expenses, vouchers, petty cash, and role-based permissions.
+- **Customer growth** — loyalty, promo codes, discount campaigns, feedback, blogs, and customer records.
+- **Operations control** — multi-branch administration, assets, maintenance logs, settings, WhatsApp device pairing, and activity visibility.
 
-- **Backend REST API** — Laravel 12 with Sanctum token authentication, serving JSON endpoints for orders, menus, inventory, customers, auth, reporting, and WhatsApp integration.
-- **Admin Dashboard (SPA)** — a Vue 3 + Vue Router app served from Laravel, styled with Tailwind CSS v4 and Bootstrap 5. All non-API routes fall through to the SPA, which handles client-side routing.
+The public home page introduces the product at `/`. Authenticated team members use `/dashboard`; public guest ordering is available through `/menu/{slug}` and `/kiosk/{placeId}`.
 
-## Tech Stack
+## Tech stack
 
 | Layer | Technology |
-|-------|-----------|
-| Framework | Laravel 12 (PHP ^8.2) |
-| Auth | Laravel Sanctum (token-based) |
-| Frontend | Vue 3, Vue Router |
-| Build tool | Vite 6 + `laravel-vite-plugin` |
-| Styling | Tailwind CSS v4, Bootstrap 5 |
-| Imaging | Intervention Image, Spatie Image, Spatie Browsershot |
-| Extras | Milon Barcode, Laravel Phone, Email Checker |
+| --- | --- |
+| Backend | Laravel 12, PHP 8.2+ |
+| Authentication | Laravel session auth for the web app, Sanctum for API clients |
+| Frontend | Vue 3, Inertia.js, Vue Router |
+| Build | Vite 6+, Laravel Vite plugin |
+| Styling | Tailwind CSS v4 and Bootstrap 5 |
+| Supporting packages | Intervention Image, Spatie Image/Browsershot, Milon Barcode, Laravel Phone |
 
-## Features
+## Application structure
 
-**Restaurant**
-- Food categories and food items (menu management)
-- Places (locations / branches)
-- Orders and order items, with discounts, service charges, and soft deletes
+- `app/Http/Controllers/` contains web and API controllers grouped by domain.
+- `app/Models/` contains the restaurant, inventory, people, finance, CRM, and operations models.
+- `resources/js/pages/` contains Inertia screens and guest-facing Vue pages.
+- `resources/js/components/` contains the admin shell, navigation, tables, forms, modals, and shared UI.
+- `resources/js/layouts/` contains the admin, login, and full-screen layouts.
+- `routes/web.php` defines the authenticated operations workspace and public guest pages.
+- `routes/api.php` exposes API integrations for authentication, menus, orders, reporting, settings, and WhatsApp.
 
-**Inventory (INV)**
-- Inventory categories, products, and brands
+## Main web routes
 
-**People**
-- Users (with registration, login, roles) and customers
+| Route | Purpose |
+| --- | --- |
+| `/` | Public KitchenOS home page |
+| `/login` | Team member sign-in |
+| `/dashboard` | Operations overview |
+| `/pos` | Point of sale |
+| `/orders` | Order management |
+| `/menu/{slug}` | Public QR menu |
+| `/kiosk/{placeId}` | Public kiosk ordering |
+| `/board` | Kitchen display board |
+| `/inventory/*` | Stock, ingredients, and recipes |
+| `/procurement/*` | Vendors, purchase orders, and goods receipts |
+| `/reports/*` | Food cost and operational reporting |
 
-**Reporting**
-- Daily summary reports (overall, dining, delivery, on-the-way)
-- Category sales and per-item quantity reports
-- Quick summary and top-ten deals reports
+The complete route list lives in `routes/web.php` and `routes/api.php`. Access to authenticated screens is controlled by session authentication and feature permissions.
 
-**Integrations & Account**
-- WhatsApp device pairing (QR generation, logout)
-- Password reset via OTP email flow
-- Profile, change password, and application settings
-
-## Frontend Structure
-
-The Vue app lives under `resources/js/`:
-
-- `pages/` — screen-level views (Dashboard, Orders, FoodItems, INVProducts, Customers, Users, Settings, Login, etc.)
-- `layouts/` — `AdminLayout` (dashboard shell) and `LoginLayout` (auth screens)
-- `components/` — `Sidebar`, `Topbar`, and reusable `ui/` widgets (`DataTable`, `FormField`, `Modal`, `PageHeader`, `StatCard`)
-- `router.js` — client-side routes; auth pages use the login layout, everything else uses the admin layout
-- `app.js` — mounts the Vue app onto `#app` in the `app` Blade view
-
-## API Endpoints
-
-Base path: `/api`
-
-**Auth** — `POST /register`, `POST /login`, `POST /logout`, `GET /logged-user`, `POST /change-password`, `POST /forgot-password`, `POST /reset-password`
-Protected routes are guarded by the `auth:sanctum` middleware.
-
-**Restaurant** — `food-categories`, `food-items`, `orders`, `places` (full CRUD)
-
-**Inventory** — `INV_Categories`, `INV_Product`, `INV_Brand` (full CRUD)
-
-**People** — `customers`, `users` (full CRUD)
-
-**Reports** — `daily-summary/report`, `daily-category-sales/report`, `daily-summary/quick-report`, `daily-summary/top-ten-deals-report`, and related variants
-
-**Settings** — `GET/POST /settings`, `POST /settings/update`, `DELETE /settings/delete`
-
-**WhatsApp** — `GET /get-whatsapp`, `POST /generate-whatsapp-qr`, `POST /whatsapp/logout-device`
-
-> Note: Most CRUD endpoints are currently public. Review the `auth:sanctum` middleware group in `routes/api.php` before deploying to production.
-
-## Getting Started
+## Getting started
 
 ### Requirements
-- PHP 8.2+
-- Composer
-- Node.js 18+ and npm
 
-### Installation
+- PHP 8.2 or newer
+- Composer
+- Node.js 18 or newer and npm
+- A configured database supported by Laravel
+
+### Install
 
 ```bash
-# Install PHP dependencies
 composer install
-
-# Install JS dependencies
 npm install
-
-# Environment setup
-cp .env.example .env
+copy .env.example .env
 php artisan key:generate
-
-# Run migrations (uses SQLite by default; configure .env for MySQL/Postgres)
 php artisan migrate
 ```
 
-### Development
+### Run locally
 
-Run the full stack (server, queue, logs, and Vite) with a single command:
-
-```bash
-composer dev
-```
-
-Or run the pieces individually:
+Run the Laravel server and Vite in separate terminals:
 
 ```bash
 php artisan serve
 npm run dev
 ```
 
-### Production Build
+Or use the project development command when the local environment supports it:
+
+```bash
+composer dev
+```
+
+### Build for production
 
 ```bash
 npm run build
 ```
+
+## API
+
+API endpoints are rooted at `/api`. They cover authentication, restaurant data, orders, inventory, customers, reporting, settings, and WhatsApp integrations. Review the middleware groups in `routes/api.php` before exposing an environment publicly.
 
 ## License
 

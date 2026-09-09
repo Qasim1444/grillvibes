@@ -65,6 +65,9 @@ Route::get('/kiosk/{placeId}', function (int $placeId) {
 // Redirect the site root: authenticated users go to the dashboard, guests go
 // to the login page (no public marketing page in this admin build).
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/product', [HomeController::class, 'product'])->name('product');
+Route::post('/reservations/request', [HomeController::class, 'storeReservation'])
+    ->name('reservations.request');
 
 // ── Authenticated (session/cookie auth) ──────────────────────────────────────
 Route::middleware('auth')->group(function () {

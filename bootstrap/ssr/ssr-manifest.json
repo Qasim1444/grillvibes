@@ -302,12 +302,12 @@
     "/build/assets/Payroll-DdctWPyi.css"
   ],
   "resources/js/pages/HomePage.vue": [
-    "/build/assets/HomePage-BNx9nDxG.js",
-    "/build/assets/HomePage-DeuzovO2.css"
+    "/build/assets/HomePage-BMVZ9qgj.js",
+    "/build/assets/HomePage-C6_w3jyB.css"
   ],
-  "resources/js/pages/HomePage.vue?vue&type=style&index=0&scoped=47fbc20e&lang.css": [
-    "/build/assets/HomePage-BNx9nDxG.js",
-    "/build/assets/HomePage-DeuzovO2.css"
+  "resources/js/pages/HomePage.vue?vue&type=style&index=0&scoped=9075e9dc&lang.css": [
+    "/build/assets/HomePage-BMVZ9qgj.js",
+    "/build/assets/HomePage-C6_w3jyB.css"
   ],
   "resources/js/pages/Inventory/Ingredients.vue": [
     "/build/assets/Ingredients-Chx9QsJ0.js",
@@ -427,6 +427,14 @@
   "resources/js/pages/Procurement/Vendors.vue?vue&type=style&index=0&scoped=ca10fd54&lang.css": [
     "/build/assets/Vendors-Ba0RLICy.js",
     "/build/assets/Vendors-ChP8_zBN.css"
+  ],
+  "resources/js/pages/ProductPage.vue": [
+    "/build/assets/ProductPage-DQVo6-vt.js",
+    "/build/assets/ProductPage-urErgw_-.css"
+  ],
+  "resources/js/pages/ProductPage.vue?vue&type=style&index=0&scoped=137cb27d&lang.css": [
+    "/build/assets/ProductPage-DQVo6-vt.js",
+    "/build/assets/ProductPage-urErgw_-.css"
   ],
   "resources/js/pages/Profile.vue": [
     "/build/assets/Profile-iqogqUtM.js",

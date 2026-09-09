@@ -2,8 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FoodCategory;
+use App\Models\FoodItem;
+use App\Models\DiningTable;
+use App\Models\Reservation;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 
 class HomeController extends Controller
 {
@@ -20,6 +27,56 @@ class HomeController extends Controller
             return redirect()->route('dashboard');
         }
 
-        return \Inertia\Inertia::render('HomePage');
+        return Inertia::render('HomePage', $this->publicMenu());
+    }
+
+    public function product()
+    {
+        return Inertia::render('ProductPage', $this->publicMenu());
+    }
+
+    public function storeReservation(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'dining_table_id' => 'required|integer|exists:dining_tables,id',
+            'guest_name'  => 'required|string|max:255',
+            'guest_email' => 'required|email|max:255',
+            'party_size'  => 'required|integer|min:1|max:20',
+            'reserved_at' => 'required|date|after_or_equal:now',
+        ]);
+
+        $table = DiningTable::findOrFail($data['dining_table_id']);
+        if (! $table->is_active || ! $table->isAvailable() || $table->capacity < $data['party_size']) {
+            throw ValidationException::withMessages([
+                'dining_table_id' => 'Please choose an available table that fits your party.',
+            ]);
+        }
+
+        Reservation::create([
+            ...$data,
+            'status' => 'pending',
+            'source' => 'online',
+        ]);
+
+        return back()->with('success', 'Reservation request received.');
+    }
+
+    private function publicMenu(): array
+    {
+        return [
+            'categories' => FoodCategory::query()
+                ->where('status', true)
+                ->orderBy('name')
+                ->get(['id', 'name', 'slug']),
+            'foodItems' => FoodItem::query()
+                ->with('foodCategory:id,name,slug')
+                ->where('status', true)
+                ->orderBy('name')
+                ->get(['id', 'foodcategory_id', 'name', 'description', 'price', 'image']),
+            'tables' => DiningTable::query()
+                ->where('is_active', true)
+                ->orderBy('table_number')
+                ->get(['id', 'table_number', 'capacity', 'shape', 'status']),
+        ];
     }
 }
