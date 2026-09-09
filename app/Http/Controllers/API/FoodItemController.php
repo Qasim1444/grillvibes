@@ -19,7 +19,7 @@ class FoodItemController extends Controller
         return [
             'foodcategory_id' => 'required|exists:food_categories,id',
             'name' => 'required|string|max:255',
-            'image' => $id ? 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048' : 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => $id ? 'nullable|image|mimes:jpeg,png,jpg,gif|max:8048' : 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'required|string',
             'code' => 'required|string|unique:food_items,code,'.($id ?? 'NULL').',id|max:255',
             'price' => 'required|numeric|min:0',
