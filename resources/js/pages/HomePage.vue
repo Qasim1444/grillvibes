@@ -70,7 +70,9 @@
 						<div class="table-picker"><span class="form-label">Choose your table</span><div class="table-grid"><button v-for="table in tables" :key="table.id" type="button" class="table-option" :class="{ selected: reservation.dining_table_id === table.id, unavailable: !isTableSuitable(table) }" :disabled="!isTableSuitable(table)" @click="reservation.dining_table_id = table.id"><strong>{{ table.table_number }}</strong><span>{{ table.capacity }} seats</span><small>{{ table.status === 'available' ? 'Available' : 'Unavailable' }}</small></button></div><p v-if="!tables.length" class="table-note">No tables are currently configured.</p></div>
 						<div class="form-row"><label>Date<input v-model="reservation.date" type="date" required /></label><label>Time<select v-model="reservation.time"><option v-for="time in times" :key="time">{{ time }}</option></select></label></div>
 						<label>How many guests<select v-model="reservation.guests"><option v-for="number in 8" :key="number" :value="number">{{ number }} {{ number === 1 ? 'guest' : 'guests' }}</option></select></label>
-						<div class="form-row"><label>Your name<input v-model="reservation.name" type="text" placeholder="Alex Morgan" required /></label><label>Email<input v-model="reservation.email" type="email" placeholder="alex@example.com" required /></label></div>
+						<div class="form-row"><label>Your name<input v-model="reservation.guest_name" type="text" placeholder="Alex Morgan" required /></label><label>Email<input v-model="reservation.guest_email" type="email" placeholder="alex@example.com" required /></label></div>
+						<div class="form-row"><label>Phone<input v-model="reservation.guest_phone" type="tel" placeholder="01234 567 890" /></label><label>Occasion<input v-model="reservation.occasion" type="text" placeholder="Birthday, anniversary..." /></label></div>
+						<label>Notes<textarea v-model="reservation.notes" rows="3" placeholder="Allergies, accessibility, or other requests"></textarea></label>
 						<button class="button button--dark submit-button" type="submit" :disabled="reservation.processing || !reservation.dining_table_id">{{ reservation.processing ? 'Sending request…' : 'Request a table' }} <span>→</span></button>
 						<p v-if="Object.keys(reservation.errors).length" class="reservation-error">Please check the booking details and try again.</p>
 						<small>We hold tables for 15 minutes. For tonight, please call <a href="tel:+441234567890">01234 567 890</a>.</small>
@@ -106,7 +108,17 @@ const filteredItems = computed(() => activeCategory.value === 'all'
 	: props.foodItems.filter(item => item.foodcategory_id === activeCategory.value));
 const times = ['12:30', '13:00', '18:00', '18:30', '19:00', '19:30', '20:00', '20:30'];
 const tables = computed(() => props.tables);
-const reservation = useForm({ date: '', time: '19:00', guests: 2, dining_table_id: null, name: '', email: '' });
+const reservation = useForm({
+	date: '',
+	time: '19:00',
+	guests: 2,
+	dining_table_id: null,
+	guest_name: '',
+	guest_phone: '',
+	guest_email: '',
+	occasion: '',
+	notes: '',
+});
 const isTableSuitable = table => table.status === 'available' && table.capacity >= Number(reservation.guests);
 watch(() => reservation.guests, () => {
 	const selectedTable = tables.value.find(table => table.id === reservation.dining_table_id);
@@ -115,11 +127,14 @@ watch(() => reservation.guests, () => {
 const reservationSent = ref(false);
 const submitReservation = () => {
 	reservation.transform(data => ({
-		guest_name: data.name,
-		guest_email: data.email,
+		guest_name: data.guest_name,
+		guest_phone: data.guest_phone || null,
+		guest_email: data.guest_email,
 		dining_table_id: data.dining_table_id,
 		party_size: data.guests,
 		reserved_at: `${data.date} ${data.time}`,
+		occasion: data.occasion || null,
+		notes: data.notes || null,
 	})).post('/reservations/request', {
 		preserveScroll: true,
 		onSuccess: () => {
@@ -144,6 +159,7 @@ const submitReservation = () => {
 .story-band { background: #263832; color: #f5f0e8; padding: 112px 0; }.story-inner { align-items: center; display: grid; gap: 100px; grid-template-columns: .9fr 1.1fr; }.story-photo { height: 370px; position: relative; }.story-photo img { height: 100%; object-fit: cover; width: 100%; }.story-photo span { background: var(--orange); bottom: -18px; color: #fff; font: .62rem/1.4 'DM Mono', monospace; padding: 15px; position: absolute; right: -18px; }.story-copy h2 { font-size: clamp(2.8rem, 4.5vw, 4.6rem); }.story-copy > p:not(.eyebrow) { color: #b8c2bb; font-size: .9rem; line-height: 1.8; margin: 30px 0; max-width: 360px; }.text-button--light { color: #fff; }
 .reserve-section { display: grid; gap: 130px; grid-template-columns: .85fr 1.15fr; padding: 126px 0; }.reserve-intro > p:not(.eyebrow) { color: var(--muted); font-size: .9rem; line-height: 1.7; margin-top: 30px; max-width: 260px; }.contact-note { border-top: 1px solid var(--line); display: flex; flex-direction: column; font-size: .66rem; gap: 5px; margin-top: 55px; padding-top: 15px; }.contact-note span { color: #8a948e; }.contact-note a { color: var(--orange); font-weight: 600; text-decoration: none; }.reserve-form { background: var(--cream); padding: 34px; }.form-row { display: grid; gap: 18px; grid-template-columns: 1fr 1fr; }.reserve-form label { color: var(--muted); display: flex; flex-direction: column; font: .63rem 'DM Mono', monospace; gap: 8px; margin-bottom: 20px; text-transform: uppercase; }.reserve-form input, .reserve-form select { background: transparent; border: 0; border-bottom: 1px solid var(--line); border-radius: 0; color: var(--ink); font: 500 .9rem 'DM Sans', sans-serif; outline: 0; padding: 9px 0; text-transform: none; width: 100%; }.reserve-form input:focus, .reserve-form select:focus { border-color: var(--orange); }.submit-button { margin-top: 8px; width: 100%; }.reserve-form small { color: #89948d; display: block; font-size: .66rem; line-height: 1.5; margin-top: 17px; text-align: center; }.reserve-form small a { color: var(--orange); }.reservation-success { align-items: start; background: #edf5e9; color: #42704d; display: flex; gap: 15px; padding: 24px; }.reservation-success > span { align-items: center; background: #5c9a6c; border-radius: 50%; color: #fff; display: grid; flex: 0 0 28px; height: 28px; justify-content: center; }.reservation-success strong { font: 600 1rem 'Fraunces', serif; }.reservation-success p { font-size: .75rem; margin: 5px 0 0; }
 .reservation-error { color: #b84c3a; font-size: .72rem; margin: 12px 0 0; text-align: center; }
+.reserve-form textarea { background: transparent; border: 1px solid var(--line); color: var(--ink); font: 500 .9rem 'DM Sans', sans-serif; outline: 0; padding: 9px; resize: vertical; width: 100%; }.reserve-form textarea:focus { border-color: var(--orange); }
 .table-picker { margin-bottom: 25px; }.form-label { color: var(--muted); display: block; font: .63rem 'DM Mono', monospace; margin-bottom: 10px; text-transform: uppercase; }.table-grid { display: grid; gap: 9px; grid-template-columns: repeat(4, 1fr); }.table-option { background: transparent; border: 1px solid var(--line); color: var(--ink); cursor: pointer; display: flex; flex-direction: column; gap: 3px; padding: 12px 8px; text-align: left; }.table-option:hover:not(:disabled), .table-option.selected { border-color: var(--orange); box-shadow: inset 0 -2px 0 var(--orange); }.table-option strong { font: 600 .9rem 'Fraunces', serif; }.table-option span, .table-option small { color: var(--muted); font-size: .62rem; }.table-option small { color: #4d9a71; }.table-option.unavailable { background: #f1eee8; color: #9ca49e; cursor: not-allowed; opacity: .65; }.table-option.unavailable small { color: #a36d5f; }.table-note { color: var(--muted); font-size: .72rem; margin: 10px 0 0; }.submit-button:disabled { cursor: not-allowed; opacity: .5; }
 .site-footer { border-top: 1px solid var(--line); }.site-footer > div { align-items: center; color: #859089; display: flex; font-size: .66rem; gap: 30px; justify-content: space-between; min-height: 100px; }.site-footer .brand { color: var(--ink); }
 @media (max-width: 900px) { .hero { gap: 45px; grid-template-columns: 1fr; }.hero-art { max-width: 680px; width: 100%; }.story-inner, .reserve-section { gap: 55px; grid-template-columns: 1fr 1fr; }.food-grid { grid-template-columns: repeat(2, 1fr); } }

@@ -67,6 +67,7 @@ class ReservationController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+        
         $data = $request->validate([
             'dining_table_id'  => 'nullable|exists:dining_tables,id',
             'branch_id'        => 'nullable|exists:branches,id',
