@@ -8,6 +8,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Web\AccountController;
 use App\Http\Controllers\Web\BranchController;
 use App\Http\Controllers\Web\BlogController;
+use App\Http\Controllers\PublicBlogController;
 use App\Http\Controllers\Web\CRM\DiscountCampaignController;
 use App\Http\Controllers\Web\CRM\FeedbackController;
 use App\Http\Controllers\Web\CRM\LoyaltyController;
@@ -68,6 +69,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/product', [HomeController::class, 'product'])->name('product');
 Route::post('/reservations/request', [HomeController::class, 'storeReservation'])
     ->name('reservations.request');
+Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.public');
 
 // ── Authenticated (session/cookie auth) ──────────────────────────────────────
 Route::middleware('auth')->group(function () {
@@ -132,7 +134,7 @@ Route::middleware('auth')->group(function () {
         ->middleware('can.access:food-items.delete')->name('food-items.destroy');
 
     // Blog posts
-    Route::get('/blog', [BlogController::class, 'index'])
+    Route::get('/admin/blog', [BlogController::class, 'index'])
         ->middleware('can.access:blog.view')->name('blog.index');
     Route::post('/blog', [BlogController::class, 'store'])
         ->middleware('can.access:blog.create')->name('blog.store');

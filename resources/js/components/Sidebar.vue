@@ -108,6 +108,7 @@ const groups = [
     title: "Content",
     items: [
       { to: "/blog", label: "Blog Posts", icon: icon.clipboard, permission: "blog.view" },
+        { to: "/admin/blog", label: "Blog Posts", icon: icon.clipboard, permission: "blog.view" },
     ],
   },
   {

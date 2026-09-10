@@ -10,7 +10,7 @@
         <a href="/" @click="mobileOpen = false">Home</a>
         <a href="#menu" @click="mobileOpen = false">Menu</a>
         <a href="#reserve" @click="mobileOpen = false">Reservation</a>
-        <a href="/blog" @click="mobileOpen = false">Blog</a>
+        <a href="#blog" @click="mobileOpen = false">Blog</a>
         <a href="#story" @click="mobileOpen = false">About</a>
         <a href="#footer" @click="mobileOpen = false">Contact</a>
       </nav>
@@ -144,6 +144,35 @@
         </div>
       </section>
 
+      <section v-if="blogPosts.length" id="blog" class="blog-section">
+        <div class="section-shell">
+          <div class="section-heading blog-heading">
+            <div>
+              <p class="eyebrow">From the KitchenOS journal</p>
+              <h2>Ideas for a<br /><em>better service.</em></h2>
+            </div>
+            <p>Practical stories and fresh thinking from the people behind better restaurant operations.</p>
+          </div>
+
+          <div class="blog-grid">
+            <article v-for="post in blogPosts" :key="post.id" class="blog-card">
+              <div class="blog-image">
+                <img v-if="post.featured_image" :src="post.featured_image" :alt="post.title" loading="lazy" />
+                <span v-else class="blog-image-placeholder">K</span>
+              </div>
+              <div class="blog-card-body">
+                <div class="blog-meta">
+                  <span>{{ post.categories?.[0]?.name || 'Restaurant operations' }}</span>
+                  <time :datetime="post.published_at">{{ formatBlogDate(post.published_at) }}</time>
+                </div>
+                <h3>{{ post.title }}</h3>
+                <p>{{ post.excerpt || post.body?.replace(/<[^>]*>/g, '').slice(0, 150) }}</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section id="reserve" class="reserve-wrap">
         <div class="reserve-section section-shell">
           <div class="reserve-copy">
@@ -251,6 +280,7 @@ const props = defineProps({
 	categories: { type: Array, default: () => [] },
 	foodItems: { type: Array, default: () => [] },
 	tables: { type: Array, default: () => [] },
+  blogPosts: { type: Array, default: () => [] },
 });
 
 const mobileOpen = ref(false);
@@ -266,6 +296,9 @@ const ribbonFeatures = [
 ];
 
 const categoriesById = id => props.categories.find(category => category.id === id)?.name;
+const formatBlogDate = value => value
+  ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(value))
+  : '';
 
 const menuCategories = computed(() => [
 	{ id: 'all', name: 'All dishes', icon: '✦' },
@@ -416,6 +449,8 @@ const submitReservation = () => {
 .food-info p{max-width:175px;margin:0;color:#7d847d;font-size:.7rem;line-height:1.5}
 .food-info strong{white-space:nowrap;color:var(--coral);font:600 .88rem 'DM Mono',monospace;padding-top:4px}
 .empty-state{padding:22px 0;color:var(--muted);border-top:1px solid var(--line)}
+.blog-section{padding:110px 0 125px;background:#f4eee5;border-bottom:1px solid #e7ddd0}
+.blog-heading{margin-bottom:42px}.blog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.blog-card{background:#fffdf8;border:1px solid #e7ded2;box-shadow:0 16px 35px rgba(70,50,30,.07)}.blog-image{height:210px;display:grid;place-items:center;overflow:hidden;background:#d9e7d7}.blog-image img{width:100%;height:100%;object-fit:cover;transition:transform .45s ease}.blog-card:hover .blog-image img{transform:scale(1.05)}.blog-image-placeholder{color:#fff;font:700 4rem 'Fraunces',serif}.blog-card-body{padding:20px}.blog-meta{display:flex;justify-content:space-between;gap:12px;color:var(--coral);font:600 .58rem 'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em}.blog-meta time{color:#899087;white-space:nowrap}.blog-card h3{margin:13px 0 9px;font:600 1.35rem/1.1 'Fraunces',serif}.blog-card p{margin:0;color:var(--muted);font-size:.76rem;line-height:1.65}
 .reserve-wrap{padding:115px 0;background:linear-gradient(180deg,#faf5ec 0%,#fff8f4 100%)}
 .reserve-section{display:grid;grid-template-columns:.82fr 1.18fr;gap:70px;align-items:start}
 .reserve-copy{padding-top:22px}
@@ -468,6 +503,7 @@ const submitReservation = () => {
   .experience,.menu-section,.reserve-wrap{padding:80px 0}
   .experience-collage{min-height:420px}.collage-card--wide{width:64%;height:250px}.collage-card--chef{width:42%;height:180px}.collage-card--dish{width:47%;height:185px}
   .section-heading{display:block}.section-heading>p{margin-top:20px}.food-grid{grid-template-columns:1fr}.food-image{height:230px}
+  .blog-section{padding:80px 0}.blog-grid{grid-template-columns:1fr}.blog-image{height:230px}
   .form-row{display:block}.table-grid{grid-template-columns:repeat(2,1fr)}
   .reserve-form{padding:20px}.form-head{margin:-20px -20px 20px;padding:18px 20px}
   .site-footer{padding:28px 0}.footer-grid{display:block}.site-footer nav{margin:24px 0}.footer-cta{text-align:left}

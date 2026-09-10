@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FoodCategory;
 use App\Models\FoodItem;
 use App\Models\DiningTable;
+use App\Models\BlogPost;
 use App\Models\Reservation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -81,6 +82,12 @@ class HomeController extends Controller
                 ->where('is_active', true)
                 ->orderBy('table_number')
                 ->get(['id', 'table_number', 'capacity', 'shape', 'status']),
+            'blogPosts' => BlogPost::query()
+                ->published()
+                ->with(['categories:id,name'])
+                ->latest('published_at')
+                ->take(3)
+                ->get(['id', 'title', 'slug', 'excerpt', 'body', 'featured_image', 'published_at']),
         ];
     }
 }
