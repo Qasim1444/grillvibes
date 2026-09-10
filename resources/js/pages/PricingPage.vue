@@ -92,7 +92,7 @@
           <!-- FINAL CTA -->
           <div class="pricing-cta">
             <h2>Ready to get started?</h2>
-            <p>Join 500+ restaurants that trust KitchenOS with their operations.</p>
+            <p>Join 500+ restaurants that trust GrillVibes with their operations.</p>
             <button class="marketing-button" @click="goToLogin">Start your free trial</button>
           </div>
         </div>
@@ -215,7 +215,7 @@ const comparisonData = [
 const pricingFaqs = [
   {
     q: 'Do I need to provide a credit card for the free trial?',
-    a: 'No, you do not need a credit card to start your free trial. You can explore KitchenOS for 14 days completely free. We\'ll only ask for payment if you decide to subscribe after the trial ends.'
+    a: 'No, you do not need a credit card to start your free trial. You can explore GrillVibes for 14 days completely free. We\'ll only ask for payment if you decide to subscribe after the trial ends.'
   },
   {
     q: 'Can I upgrade or downgrade my plan anytime?',
@@ -223,7 +223,7 @@ const pricingFaqs = [
   },
   {
     q: 'What happens after my free trial ends?',
-    a: 'After 14 days, you\'ll need to select a plan to continue using KitchenOS. You\'ll receive multiple reminders before the trial expires. Your data is never deleted, and you can pause or cancel anytime.'
+    a: 'After 14 days, you\'ll need to select a plan to continue using GrillVibes. You\'ll receive multiple reminders before the trial expires. Your data is never deleted, and you can pause or cancel anytime.'
   },
   {
     q: 'Is the price per location or per account?',
@@ -235,7 +235,7 @@ const pricingFaqs = [
   },
   {
     q: 'What\'s included in the "custom integrations"?',
-    a: 'Our team can help integrate KitchenOS with your existing systems like accounting software, delivery platforms, or internal tools. Growth plans get support for 2 custom integrations, while Enterprise gets unlimited.'
+    a: 'Our team can help integrate GrillVibes with your existing systems like accounting software, delivery platforms, or internal tools. Growth plans get support for 2 custom integrations, while Enterprise gets unlimited.'
   },
   {
     q: 'Is there a setup fee or onboarding cost?',
@@ -243,7 +243,7 @@ const pricingFaqs = [
   },
   {
     q: 'Can I get a refund if I\'m not satisfied?',
-    a: 'We\'re confident you\'ll love KitchenOS. If you\'re not satisfied within the first 30 days, we\'ll provide a full refund. No questions asked.'
+    a: 'We\'re confident you\'ll love GrillVibes. If you\'re not satisfied within the first 30 days, we\'ll provide a full refund. No questions asked.'
   },
 ];
 

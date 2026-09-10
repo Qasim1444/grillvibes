@@ -146,13 +146,18 @@
 
 
             <!-- BODY -->
-            <FormField
-                v-model="form.body"
-                label="Body"
-                type="textarea"
-                placeholder="Write the article..."
-                :error="form.errors.body"
-            />
+            <div class="editor-field">
+                <label class="ui-label">Body</label>
+
+                <textarea
+                    v-model="form.body"
+                    class="blog-body-textarea"
+                    placeholder="Write the article..."
+                    rows="12"
+                ></textarea>
+
+                <p v-if="form.errors.body" class="ui-field__error">{{ form.errors.body }}</p>
+            </div>
 
 
             <!-- FEATURED IMAGE -->
@@ -991,7 +996,6 @@ const form = useForm({
     tag_ids: []
 
 });
-
 
 // ============================================================
 // CATEGORY FORM
@@ -1967,6 +1971,84 @@ const formatDate = (value) => {
 
 <style scoped>
 
+.editor-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.rich-editor {
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.rich-editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 10px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #f8fafc;
+}
+
+.rich-editor-btn {
+    border: 1px solid #dfe3ea;
+    background: #ffffff;
+    color: #1f2937;
+    border-radius: 7px;
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.rich-editor-btn:hover {
+    border-color: #c7d2fe;
+    background: #eef2ff;
+}
+
+.rich-editor-content {
+    min-height: 220px;
+    max-height: 420px;
+    overflow-y: auto;
+    padding: 14px 16px;
+    outline: none;
+    line-height: 1.8;
+    color: #111827;
+    font-size: 0.95rem;
+}
+
+.rich-editor-content:empty::before {
+    content: attr(data-placeholder);
+    color: #9ca3af;
+}
+
+.rich-editor-content h2 {
+    margin: 0.6em 0 0.4em;
+    font-size: 1.6rem;
+    line-height: 1.2;
+}
+
+.rich-editor-content blockquote {
+    margin: 1em 0;
+    padding-left: 1rem;
+    border-left: 4px solid #6366f1;
+    color: #4b5563;
+}
+
+.rich-editor-content ul,
+.rich-editor-content ol {
+    padding-left: 1.2rem;
+    margin: 0.8rem 0;
+}
+
+.rich-editor-content a {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
 /* ============================================================
    FORM GRID
 ============================================================ */
@@ -2459,6 +2541,20 @@ const formatDate = (value) => {
 
     }
 
+}
+
+.blog-body-textarea {
+    display: block;
+    width: 100%;
+    min-height: 320px;
+    padding: 14px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #111827;
+    font: inherit;
+    line-height: 1.7;
+    resize: vertical;
 }
 
 </style>

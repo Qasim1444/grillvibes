@@ -102,7 +102,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { router, useForm } from '@inertiajs/vue3';
 import AdminLayout from '../../layouts/AdminLayout.vue';
 import PageHeader from '../../components/ui/PageHeader.vue';
@@ -124,6 +124,21 @@ const props = defineProps({
 
 const tables      = ref(props.tables.map(t => ({ ...t })));
 const selected    = ref(null);
+
+// After an add/edit/delete the controller redirects back and Inertia swaps in
+// fresh `tables` props, but this local copy would keep showing the old list
+// until a full page reload. Re-sync on every prop change, keeping any
+// un-saved drag position for tables that are still on the canvas.
+watch(() => props.tables, (next) => {
+  const localById = new Map(tables.value.map(t => [t.id, t]));
+  tables.value = next.map(t => {
+    const local = localById.get(t.id);
+    return local ? { ...t, pos_x: local.pos_x, pos_y: local.pos_y } : { ...t };
+  });
+  if (selected.value) {
+    selected.value = tables.value.find(t => t.id === selected.value.id) ?? null;
+  }
+});
 const saving      = ref(false);
 const selectedBranch = ref(props.selectedBranchId ?? '');
 

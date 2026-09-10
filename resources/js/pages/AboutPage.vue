@@ -2,7 +2,7 @@
   <div class="about-page">
     <header class="page-header">
       <div class="container header-content">
-        <h1>About KitchenOS</h1>
+        <h1>About GrillVibes</h1>
         <p>Making restaurant operations simple, so you can focus on great food and happy customers.</p>
       </div>
     </header>
@@ -15,7 +15,7 @@
             <h2>Our Mission</h2>
             <p>
               We believe restaurants shouldn't have to choose between great operations and great experience.
-                KitchenOS empowers restaurant teams with simple, powerful software that connects every aspect of
+                GrillVibes empowers restaurant teams with simple, powerful software that connects every aspect of
               their business—from orders to inventory to insights.
             </p>
             <p>
@@ -35,7 +35,7 @@
               <div class="story-year">2018</div>
               <h3>The Beginning</h3>
               <p>
-                  KitchenOS was born when our founder, Ahmed Hassan, realized how fragmented restaurant
+                  GrillVibes was born when our founder, Ahmed Hassan, realized how fragmented restaurant
                 operations really were. He was managing a growing restaurant group and juggling 5+
                 different software tools just to run the business.
               </p>
@@ -61,7 +61,7 @@
               <div class="story-year">2024</div>
               <h3>500+ Restaurants</h3>
               <p>
-                Today, KitchenOS powers operations for 500+ restaurants across 15 countries in the
+                Today, GrillVibes powers operations for 500+ restaurants across 15 countries in the
                 Middle East, Asia, and beyond. We're just getting started.
               </p>
             </div>
@@ -185,7 +185,7 @@
               <div class="milestone-dot"></div>
               <div class="milestone-content">
                 <div class="milestone-date">Q1 2018</div>
-                <h3>KitchenOS Founded</h3>
+                <h3>GrillVibes Founded</h3>
                 <p>Started with a single mission: simplify restaurant operations.</p>
               </div>
             </div>
@@ -254,7 +254,7 @@
       <section class="about-cta">
         <div class="container cta-content">
           <h2>Ready to be part of the restaurant revolution?</h2>
-          <p>Join 500+ restaurants that trust KitchenOS with their operations.</p>
+          <p>Join 500+ restaurants that trust GrillVibes with their operations.</p>
           <button class="marketing-button" @click="goToLogin">Start free trial</button>
         </div>
       </section>

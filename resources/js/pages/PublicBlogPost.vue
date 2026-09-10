@@ -1,9 +1,9 @@
 ﻿<template>
   <div class="public-blog-post">
     <header class="blog-header">
-      <a class="brand" href="/" aria-label="KitchenOS home">
-        <span class="brand-mark">K</span>
-        <span>Kitchen<span class="brand-accent">OS</span></span>
+      <a class="brand" href="/" aria-label="GrillVibes home">
+        <span class="brand-mark">G</span>
+        <span>Grill<span class="brand-accent">Vibes</span></span>
       </a>
       <nav aria-label="Primary navigation">
         <a href="/">Home</a>
@@ -40,7 +40,7 @@
 
             <div class="meta-badges">
               <span>Fresh insights</span>
-              <span>KitchenOS</span>
+              <span>GrillVibes</span>
             </div>
           </div>
 
@@ -78,7 +78,7 @@
     </main>
 
     <footer>
-      <a href="/">KitchenOS</a>
+      <a href="/">GrillVibes</a>
       <span>Great food. Better operations.</span>
     </footer>
   </div>

@@ -3,7 +3,7 @@
     <div class="auth__brand-panel">
       <div class="auth__brand">
         <div class="auth__logo">J</div>
-        <span class="auth__brand-name">KitchenOS Admin</span>
+        <span class="auth__brand-name">GrillVibes Admin</span>
       </div>
       <div class="auth__pitch">
         <h2>Welcome back</h2>
