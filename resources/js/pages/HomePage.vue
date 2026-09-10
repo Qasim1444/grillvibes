@@ -155,7 +155,7 @@
           </div>
 
           <div class="blog-grid">
-            <article v-for="post in blogPosts" :key="post.id" class="blog-card">
+            <a v-for="post in blogPosts" :key="post.id" class="blog-card" :href="`/blog/${post.slug}`">
               <div class="blog-image">
                 <img v-if="post.featured_image" :src="post.featured_image" :alt="post.title" loading="lazy" />
                 <span v-else class="blog-image-placeholder">K</span>
@@ -168,7 +168,7 @@
                 <h3>{{ post.title }}</h3>
                 <p>{{ post.excerpt || post.body?.replace(/<[^>]*>/g, '').slice(0, 150) }}</p>
               </div>
-            </article>
+            </a>
           </div>
         </div>
       </section>

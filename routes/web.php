@@ -70,6 +70,7 @@ Route::get('/product', [HomeController::class, 'product'])->name('product');
 Route::post('/reservations/request', [HomeController::class, 'storeReservation'])
     ->name('reservations.request');
 Route::get('/blog', [PublicBlogController::class, 'index'])->name('blog.public');
+Route::get('/blog/{slug}', [PublicBlogController::class, 'show'])->name('blog.public.show');
 
 // ── Authenticated (session/cookie auth) ──────────────────────────────────────
 Route::middleware('auth')->group(function () {
