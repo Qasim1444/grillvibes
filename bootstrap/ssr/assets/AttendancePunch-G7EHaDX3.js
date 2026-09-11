@@ -1,9 +1,5 @@
 import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper-BOaGB7Aw.js";
-<<<<<<<< HEAD:bootstrap/ssr/assets/AttendancePunch-B56aeM3Z.js
-import { t as AdminLayout_default } from "./AdminLayout-CRfe4OCB.js";
-========
 import { t as AdminLayout_default } from "./AdminLayout-Bwr7FeyI.js";
->>>>>>>> 92defc434e56ef7274fc5083cb00cd7073d56b27:bootstrap/ssr/assets/AttendancePunch-G7EHaDX3.js
 import { t as _sfc_main$1 } from "./PageHeader-D0aRDn5C.js";
 import { computed, mergeProps, unref, useSSRContext } from "vue";
 import { useForm } from "@inertiajs/vue3";

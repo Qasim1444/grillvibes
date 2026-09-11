@@ -1,9 +1,5 @@
 import { t as _plugin_vue_export_helper_default } from "./_plugin-vue_export-helper-BOaGB7Aw.js";
-<<<<<<<< HEAD:bootstrap/ssr/assets/Attendance-Cl64Ai-Z.js
-import { n as usePermissions, t as AdminLayout_default } from "./AdminLayout-CRfe4OCB.js";
-========
 import { n as usePermissions, t as AdminLayout_default } from "./AdminLayout-Bwr7FeyI.js";
->>>>>>>> 92defc434e56ef7274fc5083cb00cd7073d56b27:bootstrap/ssr/assets/Attendance-CWZ-6SSZ.js
 import { t as _sfc_main$1 } from "./PageHeader-D0aRDn5C.js";
 import { t as DataTable_default } from "./DataTable-BHCUCuvd.js";
 import { t as StatCard_default } from "./StatCard-C81bFHCl.js";

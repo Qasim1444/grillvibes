@@ -421,15 +421,9 @@ var _sfc_main$2 = {
 			_push(`<!--[--><aside class="${ssrRenderClass([{
 				"sidebar--collapsed": unref(state).collapsed,
 				"sidebar--mobile-open": unref(state).mobileOpen
-<<<<<<<< HEAD:bootstrap/ssr/assets/AdminLayout-CRfe4OCB.js
-			}, "sidebar"])}" data-v-69a22564><div class="sidebar__brand" data-v-69a22564><div class="sidebar__logo" data-v-69a22564>J</div><span class="sidebar__brand-name" data-v-69a22564>KitchenOS Admin</span></div><nav class="sidebar__nav" data-v-69a22564><!--[-->`);
-			ssrRenderList(visibleGroups.value, (group) => {
-				_push(`<!--[--><div class="sidebar__group-title" data-v-69a22564>${ssrInterpolate(group.title)}</div><!--[-->`);
-========
 			}, "sidebar"])}" data-v-15037efb><div class="sidebar__brand" data-v-15037efb><div class="sidebar__logo" data-v-15037efb>J</div><span class="sidebar__brand-name" data-v-15037efb>GrillVibes Admin</span></div><nav class="sidebar__nav" data-v-15037efb><!--[-->`);
 			ssrRenderList(visibleGroups.value, (group) => {
 				_push(`<!--[--><div class="sidebar__group-title" data-v-15037efb>${ssrInterpolate(group.title)}</div><!--[-->`);
->>>>>>>> 92defc434e56ef7274fc5083cb00cd7073d56b27:bootstrap/ssr/assets/AdminLayout-Bwr7FeyI.js
 				ssrRenderList(group.items, (item) => {
 					_push(ssrRenderComponent(unref(Link), {
 						key: item.to,
@@ -438,11 +432,7 @@ var _sfc_main$2 = {
 						onClick: unref(closeMobile)
 					}, {
 						default: withCtx((_, _push, _parent, _scopeId) => {
-<<<<<<<< HEAD:bootstrap/ssr/assets/AdminLayout-CRfe4OCB.js
-							if (_push) _push(`<span class="sidebar__icon" data-v-69a22564${_scopeId}>${item.icon ?? ""}</span><span class="sidebar__label" data-v-69a22564${_scopeId}>${ssrInterpolate(item.label)}</span>`);
-========
 							if (_push) _push(`<span class="sidebar__icon" data-v-15037efb${_scopeId}>${item.icon ?? ""}</span><span class="sidebar__label" data-v-15037efb${_scopeId}>${ssrInterpolate(item.label)}</span>`);
->>>>>>>> 92defc434e56ef7274fc5083cb00cd7073d56b27:bootstrap/ssr/assets/AdminLayout-Bwr7FeyI.js
 							else return [createVNode("span", {
 								class: "sidebar__icon",
 								innerHTML: item.icon
@@ -454,11 +444,7 @@ var _sfc_main$2 = {
 				_push(`<!--]--><!--]-->`);
 			});
 			_push(`<!--]--></nav></aside>`);
-<<<<<<<< HEAD:bootstrap/ssr/assets/AdminLayout-CRfe4OCB.js
-			if (unref(state).mobileOpen) _push(`<div class="sidebar__backdrop" data-v-69a22564></div>`);
-========
 			if (unref(state).mobileOpen) _push(`<div class="sidebar__backdrop" data-v-15037efb></div>`);
->>>>>>>> 92defc434e56ef7274fc5083cb00cd7073d56b27:bootstrap/ssr/assets/AdminLayout-Bwr7FeyI.js
 			else _push(`<!---->`);
 			_push(`<!--]-->`);
 		};
@@ -470,11 +456,7 @@ _sfc_main$2.setup = (props, ctx) => {
 	(ssrContext.modules || (ssrContext.modules = /* @__PURE__ */ new Set())).add("resources/js/components/Sidebar.vue");
 	return _sfc_setup$2 ? _sfc_setup$2(props, ctx) : void 0;
 };
-<<<<<<<< HEAD:bootstrap/ssr/assets/AdminLayout-CRfe4OCB.js
-var Sidebar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$2, [["__scopeId", "data-v-69a22564"]]);
-========
 var Sidebar_default = /*#__PURE__*/ _plugin_vue_export_helper_default(_sfc_main$2, [["__scopeId", "data-v-15037efb"]]);
->>>>>>>> 92defc434e56ef7274fc5083cb00cd7073d56b27:bootstrap/ssr/assets/AdminLayout-Bwr7FeyI.js
 //#endregion
 //#region resources/js/components/Topbar.vue
 var _sfc_main$1 = {
