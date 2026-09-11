@@ -1,9 +1,9 @@
 <template>
   <div class="public-blog">
     <header class="blog-header">
-      <a class="brand" href="/" aria-label="KitchenOS home">
-        <span class="brand-mark">K</span>
-        <span>Kitchen<span class="brand-accent">OS</span></span>
+      <a class="brand" href="/" aria-label="GrillVibes home">
+        <span class="brand-mark">G</span>
+        <span>Grill<span class="brand-accent">Vibes</span></span>
       </a>
       <nav aria-label="Primary navigation">
         <a href="/">Home</a>
@@ -15,7 +15,7 @@
 
     <main>
       <section class="blog-hero">
-        <p class="eyebrow">The KitchenOS journal</p>
+        <p class="eyebrow">The GrillVibes journal</p>
         <h1>Ideas for a<br /><em>better service.</em></h1>
         <p>Practical stories, restaurant insights, and fresh thinking from the people behind better operations.</p>
       </section>
@@ -71,7 +71,7 @@
     </main>
 
     <footer>
-      <a href="/">KitchenOS</a>
+      <a href="/">GrillVibes</a>
       <span>Great food. Better operations.</span>
     </footer>
   </div>

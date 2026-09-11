@@ -1,8 +1,22 @@
+@php
+    // Business identity for the receipt comes from the Settings module
+    // (Setting::first()). $settings may be null before the first profile is saved.
+    $bizName    = $settings->company ?? $settings->name ?? config('app.name');
+    $bizAddress = $settings->address ?? null;
+    $bizPhone   = $settings->phone ?? null;
+    $bizEmail   = $settings->email ?? null;
+    $bizFooter  = $settings->message ?? ('Thank you for visiting '.$bizName);
+    $bizLogo    = $settings && $settings->logo && is_file(public_path($settings->logo))
+                    ? asset($settings->logo)
+                    : null;
+    $associate  = auth()->user()->name ?? ($settings->name ?? '—');
+    $currency   = $settings->currency ?? 'PKR';
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Invoice - Chizzix Cafe</title>
+    <title>Invoice - {{ $bizName }}</title>
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -60,17 +74,34 @@
             padding-top: 15px;
             border-top: 1px dashed #dee2e6;
         }
+        .print-bar {
+            max-width: 400px;
+            margin: 12px auto 0;
+            text-align: center;
+        }
+        /* Thermal-roll friendly: no page margins, full-width card, no shadow. */
+        @media print {
+            @page { size: 80mm auto; margin: 4mm; }
+            body { background: #fff; }
+            .invoice-card { box-shadow: none; margin: 0; max-width: 100%; }
+            .print-bar { display: none; }
+        }
     </style>
 </head>
 <body>
 <div class="card invoice-card">
     <div class="card-body p-4">
         <div class="invoice-header text-center">
-            <img src="https://chizzixcafebackend.codewiresolutions.com/storage/logos/YSHC1wyB4rKmjtQyQTaGelnOhQk3aoqjGMqgouIa.png" alt="Chizzix Logo" width="100">
+            @if($bizLogo)
+                <img src="{{ $bizLogo }}" alt="{{ $bizName }}" width="100">
+            @else
+                <div class="invoice-title">{{ $bizName }}</div>
+            @endif
 
             <div class="invoice-address">
-                Near Imtiaz Mall, Opposite Allied Bank, Ludden Road, Vehari<br>
-                +92321-1231235
+                @if($bizAddress){{ $bizAddress }}<br>@endif
+                @if($bizPhone){{ $bizPhone }}@endif
+                @if($bizEmail)<br>{{ $bizEmail }}@endif
             </div>
         </div>
 
@@ -80,7 +111,7 @@
                 <span class="fw-bold">INV-{{ $order->id }}-{{ strtotime($order->order_datetime) }}</span>
             </div>
             <div class="d-flex justify-content-between">
-                <span class="fw-semibold">OT:</span>
+                <span class="fw-semibold">Order-Type:</span>
                 <span>{{ $order->type ?? 'N/A' }}</span>
             </div>
         </div>
@@ -92,7 +123,7 @@
             </div>
             <div class="d-flex justify-content-between">
                 <span class="fw-semibold">Sale's Associate:</span>
-                <span>Chizzix</span>
+                <span>{{ $associate }}</span>
             </div>
         </div>
 
@@ -124,7 +155,7 @@
             <tr>
                 <td>{{ $item->item->name ?? 'Item' }}</td>
                 <td class="text-end">{{ $item->quantity }}</td>
-                <td class="text-end">PKR {{ number_format($item->sub_total, 2) }}</td>
+                <td class="text-end">{{ $currency }} {{ number_format($item->sub_total, 2) }}</td>
             </tr>
             @endforeach
             </tbody>
@@ -137,25 +168,51 @@
 
         <div class="mb-1 calculation-row d-flex justify-content-between">
             <span>Subtotal:</span>
-            <span>PKR {{ number_format($order->subtotal, 2) }}</span>
+            <span>{{ $currency }} {{ number_format($order->subtotal, 2) }}</span>
         </div>
         <div class="mb-1 calculation-row d-flex justify-content-between">
             <span>Service Charges ({{ $order->service_charges_percentage }}%):</span>
-            <span class="positive-amount">+PKR {{ number_format($order->service_charges, 2) }}</span>
+            <span class="positive-amount">+{{ $currency }} {{ number_format($order->service_charges, 2) }}</span>
         </div>
         <div class="mb-1 calculation-row d-flex justify-content-between">
             <span>Discount:</span>
-            <span class="negative-amount">-PKR {{ number_format($order->discount_amount, 2) }}</span>
+            <span class="negative-amount">-{{ $currency }} {{ number_format($order->discount_amount, 2) }}</span>
         </div>
         <div class="mb-3 calculation-row d-flex justify-content-between">
             <span class="fw-bold">Grand Total:</span>
-            <span class="fw-bold">PKR {{ number_format($order->grand_total, 2) }}</span>
+            <span class="fw-bold">{{ $currency }} {{ number_format($order->grand_total, 2) }}</span>
         </div>
 
         <div class="invoice-footer">
-            Thanks for visiting chizzix cafe
+            {{ $bizFooter }}
         </div>
     </div>
 </div>
+
+<div class="print-bar">
+    <button type="button" class="btn btn-primary btn-sm" onclick="window.print()">Print receipt</button>
+</div>
+
+<script>
+    // Auto-open the print dialog once the layout (and the logo image) has loaded.
+    // This page is loaded in a hidden iframe by the POS after an order is placed,
+    // and can also be opened directly to reprint.
+    (function () {
+        var printed = false;
+        function go() {
+            if (printed) return;
+            printed = true;
+            window.focus();
+            window.print();
+        }
+        if (document.readyState === 'complete') {
+            setTimeout(go, 300);
+        } else {
+            window.addEventListener('load', function () { setTimeout(go, 300); });
+        }
+        // Fallback in case the logo image never fires load.
+        setTimeout(go, 2500);
+    })();
+</script>
 </body>
 </html>

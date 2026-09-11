@@ -1,6 +1,6 @@
-# KitchenOS
+# GrillVibes
 
-KitchenOS is a restaurant operations platform for running the complete service cycle from one workspace: menu and order management, point of sale, kitchen production, inventory, purchasing, people operations, finance, guest ordering, and reporting.
+GrillVibes is a restaurant operations platform for running the complete service cycle from one workspace: menu and order management, point of sale, kitchen production, inventory, purchasing, people operations, finance, guest ordering, and reporting.
 
 ## What the app covers
 
@@ -38,7 +38,7 @@ The public home page introduces the product at `/`. Authenticated team members u
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Public KitchenOS home page |
+| `/` | Public GrillVibes home page |
 | `/login` | Team member sign-in |
 | `/dashboard` | Operations overview |
 | `/pos` | Point of sale |

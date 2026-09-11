@@ -1,9 +1,9 @@
 <template>
   <div class="product-page">
     <header class="site-header">
-      <a class="brand" href="/" aria-label="KitchenOS home">
-        <span class="brand-mark">K</span>
-        <span>Kitchen<span class="brand-accent">OS</span></span>
+      <a class="brand" href="/" aria-label="GrillVibes home">
+        <span class="brand-mark">G</span>
+        <span>Grill<span class="brand-accent">Vibes</span></span>
       </a>
 
       <nav class="site-nav" :class="{ 'site-nav--open': mobileOpen }" aria-label="Primary navigation">
@@ -31,7 +31,7 @@
           <div class="hero-copy">
             <p class="kicker"><span></span> Restaurant management made simple</p>
             <h1>All You Need to Run<br />a Successful <em>Restaurant</em></h1>
-            <p class="hero-lede">From POS to kitchen, inventory to finance — KitchenOS brings everything together in one powerful platform.</p>
+            <p class="hero-lede">From POS to kitchen, inventory to finance — GrillVibes brings everything together in one powerful platform.</p>
 
             <div class="hero-actions">
               <a class="button button--violet" href="/login">Get Started Free</a>
@@ -78,10 +78,10 @@
       <section id="solutions" class="product-preview section-wrap">
         <div class="preview-layout">
           <div class="dashboard-shell">
-            <div class="dash-topbar"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span><b>KitchenOS / Main branch</b><span class="dash-live">● Service live</span></div>
+            <div class="dash-topbar"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span><b>GrillVibes / Main branch</b><span class="dash-live">● Service live</span></div>
             <div class="dashboard-body">
               <aside class="dash-sidebar">
-                <div class="dash-logo">Kitchen<span>OS</span></div>
+                <div class="dash-logo">Grill<span>Vibes</span></div>
                 <div class="dash-item active">⌂ <span>Dashboard</span></div>
                 <div class="dash-item">◫ <span>Orders</span></div>
                 <div class="dash-item">▣ <span>POS</span></div>
@@ -128,7 +128,7 @@
 
           <div class="preview-copy">
             <h2>Smart Tools for<br />Modern Restaurants</h2>
-            <p>KitchenOS gives you complete control over your restaurant operations with easy-to-use tools and powerful insights.</p>
+            <p>GrillVibes gives you complete control over your restaurant operations with easy-to-use tools and powerful insights.</p>
 
             <div class="check-list">
               <div><span>✓</span>All-in-one restaurant management</div>
@@ -229,7 +229,7 @@
           <article v-for="item in foodItems" :key="item.id" class="product-menu-card">
             <div class="product-image" :class="{ 'product-image--empty': !item.image }">
               <img v-if="item.image" :src="item.image" :alt="item.name" loading="lazy" />
-              <span v-else>KitchenOS</span>
+              <span v-else>GrillVibes</span>
             </div>
             <div class="product-menu-card__body">
               <span>{{ item.food_category?.name || 'Menu item' }}</span>
@@ -239,7 +239,7 @@
             </div>
           </article>
         </div>
-        <p v-else class="menu-empty">No published menu products yet. Add food items from the KitchenOS workspace.</p>
+        <p v-else class="menu-empty">No published menu products yet. Add food items from the GrillVibes workspace.</p>
       </section>
 
       <section class="final-cta section-wrap">
@@ -251,7 +251,7 @@
           </div>
           <div class="final-actions">
             <a class="button button--violet" href="/login">Get started free <span>→</span></a>
-            <a class="text-link text-link--light" href="#features">Explore KitchenOS <span>↗</span></a>
+            <a class="text-link text-link--light" href="#features">Explore GrillVibes <span>↗</span></a>
           </div>
         </div>
       </section>
@@ -259,9 +259,9 @@
 
     <footer id="footer" class="site-footer">
       <div class="section-wrap footer-grid">
-        <div><a class="brand" href="/"><span class="brand-mark">K</span><span>Kitchen<span class="brand-accent">OS</span></span></a><p>One calm place to run a busy restaurant.</p></div>
+        <div><a class="brand" href="/"><span class="brand-mark">G</span><span>Grill<span class="brand-accent">Vibes</span></span></a><p>One calm place to run a busy restaurant.</p></div>
         <nav aria-label="Footer navigation"><a href="#features">Features</a><a href="#workflow">Workflow</a><a href="#guest-ordering">Guest ordering</a><a href="#menu">Menu</a></nav>
-        <a href="/login" class="footer-signin">Sign in to KitchenOS ↗</a>
+        <a href="/login" class="footer-signin">Sign in to GrillVibes ↗</a>
       </div>
     </footer>
   </div>

@@ -8,7 +8,7 @@ createServer((page) =>
     createInertiaApp({
         page,
         render: renderToString,
-        title: (title) => (title ? `${title} — KitchenOS Admin` : 'KitchenOS Admin'),
+        title: (title) => (title ? `${title} — GrillVibes Admin` : 'GrillVibes Admin'),
         resolve: (name) =>
             resolvePageComponent(
                 `./pages/${name}.vue`,

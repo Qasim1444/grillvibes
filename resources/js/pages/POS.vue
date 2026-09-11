@@ -848,6 +848,28 @@ const nowForApi = () => {
   )}:${p(d.getSeconds())}`;
 };
 
+// Load the order's printable receipt in a hidden iframe; that page auto-opens
+// the browser print dialog once it (and the logo) have rendered. Reused across
+// orders — the previous frame is torn down first.
+const printReceipt = (orderId) => {
+  const prev = document.getElementById("pos-receipt-frame");
+  if (prev) prev.remove();
+
+  const frame = document.createElement("iframe");
+  frame.id = "pos-receipt-frame";
+  frame.setAttribute("aria-hidden", "true");
+  Object.assign(frame.style, {
+    position: "fixed",
+    left: "-9999px",
+    top: "0",
+    width: "1px",
+    height: "1px",
+    border: "0",
+  });
+  frame.src = `/orders/${orderId}/receipt`;
+  document.body.appendChild(frame);
+};
+
 const placeOrder = () => {
   saveError.value = "";
   successMsg.value = "";
@@ -904,7 +926,11 @@ const placeOrder = () => {
     preserveScroll: true,
     onSuccess: () => {
       // The controller flashes a success message with the new order id.
-      successMsg.value = page.props.flash?.success || "Order placed successfully.";
+      const msg = page.props.flash?.success || "Order placed successfully.";
+      successMsg.value = msg;
+      // Flash reads "Order #123 placed successfully." — pull the id and print.
+      const idMatch = String(msg).match(/#(\d+)/);
+      if (idMatch) printReceipt(idMatch[1]);
       cart.value = [];
       form.value.discount_amount = 0;
       form.value.customer_id = null;

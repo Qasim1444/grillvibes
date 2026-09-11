@@ -23,7 +23,7 @@
       <form class="login-form" @submit.prevent="submitLogin">
         <div class="field">
           <label for="email">Email</label>
-          <input id="email" v-model.trim="form.email" type="email" placeholder="admin@kitchenos.io" @blur="validateEmail" />
+          <input id="email" v-model.trim="form.email" type="email" placeholder="admin@grillvibes.io" @blur="validateEmail" />
           <small v-if="errors.email" class="field-error">{{ errors.email }}</small>
         </div>
 
@@ -48,8 +48,8 @@
 
       <div class="demo-box">
         <p>Demo accounts</p>
-        <span>Super Admin: super@kitchenos.io / password123</span>
-        <span>Sub-Admin: subadmin@kitchenos.io / password123</span>
+        <span>Super Admin: super@grillvibes.io / password123</span>
+        <span>Sub-Admin: subadmin@grillvibes.io / password123</span>
       </div>
     </div>
   </div>
@@ -94,7 +94,7 @@ const submitLogin = () => {
     return;
   }
 
-  const expectedEmail = selectedRole.value === 'SUPER_ADMIN' ? 'super@kitchenos.io' : 'subadmin@kitchenos.io';
+  const expectedEmail = selectedRole.value === 'SUPER_ADMIN' ? 'super@grillvibes.io' : 'subadmin@grillvibes.io';
   const validPassword = 'password123';
 
   isSubmitting.value = true;
@@ -108,8 +108,8 @@ const submitLogin = () => {
       return;
     }
 
-    localStorage.setItem('kitchenos_admin_token', 'demo-token');
-    localStorage.setItem('kitchenos_admin_role', selectedRole.value);
+    localStorage.setItem('grillvibes_admin_token', 'demo-token');
+    localStorage.setItem('grillvibes_admin_role', selectedRole.value);
     router.push('/admin');
   }, 600);
 };

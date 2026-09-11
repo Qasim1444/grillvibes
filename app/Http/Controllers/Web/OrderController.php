@@ -170,6 +170,22 @@ class OrderController extends Controller
     }
 
     /**
+     * A printable HTML receipt for an order. Opened in a hidden iframe by the POS
+     * right after checkout (the page auto-triggers the browser print dialog), and
+     * reachable directly to reprint. Vector HTML prints crisper on an 80mm roll
+     * than the PNG that goes out over WhatsApp.
+     */
+    public function receipt($id): \Illuminate\Contracts\View\View
+    {
+        $order = Order::with(['orderItems.item', 'customer'])->findOrFail($id);
+
+        return view('receipts.order', [
+            'order' => $order,
+            'settings' => \App\Models\Setting::first(),
+        ]);
+    }
+
+    /**
      * Price a promo code for the POS "Apply" button.
      *
      * A GET because it writes nothing — the code is validated again at checkout

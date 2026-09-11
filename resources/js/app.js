@@ -3,7 +3,7 @@ import { createInertiaApp } from '@inertiajs/vue3'
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers'
 
 createInertiaApp({
-    title: (title) => (title ? `${title} — KitchenOS` : 'KitchenOS'),
+    title: (title) => (title ? `${title} — GrillVibes` : 'GrillVibes'),
     resolve: (name) =>
         resolvePageComponent(
             `./pages/${name}.vue`,

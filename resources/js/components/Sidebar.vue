@@ -2,7 +2,7 @@
   <aside class="sidebar" :class="{ 'sidebar--collapsed': state.collapsed, 'sidebar--mobile-open': state.mobileOpen }">
     <div class="sidebar__brand">
       <div class="sidebar__logo">J</div>
-      <span class="sidebar__brand-name">KitchenOS Admin</span>
+      <span class="sidebar__brand-name">GrillVibes Admin</span>
     </div>
 
     <nav class="sidebar__nav">

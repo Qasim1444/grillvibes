@@ -1,9 +1,9 @@
 <template>
   <div class="restaurant-home">
     <header class="site-header">
-      <a class="brand" href="/" aria-label="KitchenOS home">
-        <span class="brand-mark">K</span>
-        <span>Kitchen<span class="brand-accent">OS</span></span>
+      <a class="brand" href="/" aria-label="GrillVibes home">
+        <span class="brand-mark">G</span>
+        <span>Grill<span class="brand-accent">Vibes</span></span>
       </a>
 
       <nav class="site-nav" :class="{ 'site-nav--open': mobileOpen }" aria-label="Primary navigation">
@@ -31,7 +31,7 @@
           <p class="eyebrow"><span class="eyebrow-dot"></span> Restaurant operations, beautifully connected</p>
           <h1>Delicious Food<br /><em>Smarter Operations</em></h1>
           <p class="hero-text">
-            KitchenOS helps restaurants manage orders, kitchen, inventory, staff, finance, and guest experiences — so you can focus on serving great food.
+            GrillVibes helps restaurants manage orders, kitchen, inventory, staff, finance, and guest experiences — so you can focus on serving great food.
           </p>
 
           <div class="hero-actions">
@@ -39,7 +39,7 @@
             <a class="button button--outline" href="#story"><span class="play">▶</span> Watch Video</a>
           </div>
 
-          <div class="hero-stats" aria-label="KitchenOS highlights">
+          <div class="hero-stats" aria-label="GrillVibes highlights">
             <div><strong>500+</strong><span>Restaurants</span></div>
             <div><strong>50K+</strong><span>Happy Customers</span></div>
             <div><strong>99.9%</strong><span>Uptime</span></div>
@@ -62,7 +62,7 @@
         </div>
       </section>
 
-      <section class="feature-ribbon section-shell" aria-label="KitchenOS capabilities">
+      <section class="feature-ribbon section-shell" aria-label="GrillVibes capabilities">
         <div v-for="(feature, index) in ribbonFeatures" :key="feature.label" class="ribbon-item">
           <div class="ribbon-icon" :class="feature.tone"><span>{{ feature.icon }}</span></div>
           <span>{{ feature.label }}</span>
@@ -75,7 +75,7 @@
           <p class="eyebrow">A complete restaurant management platform</p>
           <h2>Run the restaurant.<br /><em>Enjoy the craft.</em></h2>
           <p class="section-lede">
-            From front of house to back of house, KitchenOS brings everything together in one connected platform.
+            From front of house to back of house, GrillVibes brings everything together in one connected platform.
           </p>
 
           <div class="check-list">
@@ -114,7 +114,7 @@
               <p class="eyebrow">From the kitchen</p>
               <h2>Made to be<br /><em>remembered.</em></h2>
             </div>
-            <p>Browse your live menu by category. Every dish shown here comes from the KitchenOS food catalogue.</p>
+            <p>Browse your live menu by category. Every dish shown here comes from the GrillVibes food catalogue.</p>
           </div>
 
           <div class="category-row" role="tablist" aria-label="Food categories">
@@ -148,7 +148,7 @@
         <div class="section-shell">
           <div class="section-heading blog-heading">
             <div>
-              <p class="eyebrow">From the KitchenOS journal</p>
+              <p class="eyebrow">From the GrillVibes journal</p>
               <h2>Ideas for a<br /><em>better service.</em></h2>
             </div>
             <p>Practical stories and fresh thinking from the people behind better restaurant operations.</p>
@@ -255,7 +255,7 @@
     <footer id="footer" class="site-footer">
       <div class="section-shell footer-grid">
         <div>
-          <a class="brand" href="/"><span class="brand-mark">K</span><span>Kitchen<span class="brand-accent">OS</span></span></a>
+          <a class="brand" href="/"><span class="brand-mark">G</span><span>Grill<span class="brand-accent">Vibes</span></span></a>
           <p>Great food. Better operations.</p>
         </div>
         <nav aria-label="Footer navigation">
@@ -263,7 +263,7 @@
         </nav>
         <div class="footer-cta">
           <span>Ready to run service better?</span>
-          <a href="/login">Enter KitchenOS ↗</a>
+          <a href="/login">Enter GrillVibes ↗</a>
         </div>
       </div>
     </footer>

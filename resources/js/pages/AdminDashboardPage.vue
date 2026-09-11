@@ -4,7 +4,7 @@
       <div class="sidebar__brand">
         <div class="sidebar__logo">J</div>
         <div>
-          <strong>KitchenOS</strong>
+          <strong>GrillVibes</strong>
           <span>Operations</span>
         </div>
       </div>
@@ -128,7 +128,7 @@ import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
-const userRole = computed(() => localStorage.getItem('kitchenos_admin_role') === 'SUB_ADMIN' ? 'Sub-Admin' : 'Super Admin');
+const userRole = computed(() => localStorage.getItem('grillvibes_admin_role') === 'SUB_ADMIN' ? 'Sub-Admin' : 'Super Admin');
 const userName = computed(() => userRole.value === 'Sub-Admin' ? 'Samir Gomez' : 'Ariana Chen');
 const userInitials = computed(() => userName.value.split(' ').map(part => part[0]).slice(0, 2).join('').toUpperCase());
 
@@ -175,8 +175,8 @@ const statusClass = (status) => {
 };
 
 const logout = () => {
-  localStorage.removeItem('kitchenos_admin_token');
-  localStorage.removeItem('kitchenos_admin_role');
+  localStorage.removeItem('grillvibes_admin_token');
+  localStorage.removeItem('grillvibes_admin_role');
   router.push('/login');
 };
 </script>

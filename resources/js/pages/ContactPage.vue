@@ -22,7 +22,7 @@
               <div class="method-icon">📧</div>
               <h3>Email us</h3>
               <p>Send us your questions anytime</p>
-              <a href="mailto:hello@kitchenos.io" class="method-button">hello@kitchenos.io</a>
+              <a href="mailto:hello@grillvibes.io" class="method-button">hello@grillvibes.io</a>
             </div>
             <div class="method-card">
               <div class="method-icon">📞</div>
@@ -153,7 +153,7 @@
 
               <h3>Office Address</h3>
               <address>
-                  KitchenOS Inc.<br>
+                  GrillVibes Inc.<br>
                 Dubai Business Hub<br>
                 Dubai, UAE<br>
                 PO Box 123456
@@ -221,7 +221,7 @@ const form = ref({
 const quickFaqs = [
   {
     q: 'How quickly can we get started?',
-    a: 'You can sign up for a free trial in minutes and start exploring KitchenOS immediately. Most restaurants are live and taking orders within 1-3 days with our guided setup process.'
+    a: 'You can sign up for a free trial in minutes and start exploring GrillVibes immediately. Most restaurants are live and taking orders within 1-3 days with our guided setup process.'
   },
   {
     q: 'What payment methods do you accept?',

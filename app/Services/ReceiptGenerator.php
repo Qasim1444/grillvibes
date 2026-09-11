@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Order;
+use App\Models\Setting;
 use GdImage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
@@ -34,20 +35,26 @@ class ReceiptGenerator
 
     private const ITEM_NAME_MAX_WIDTH = 205;             // wrap long item names
 
-    /** Header details (kept identical to the Blade template). */
-    private const LOGO_URL = 'https://chizzixcafebackend.codewiresolutions.com/storage/logos/YSHC1wyB4rKmjtQyQTaGelnOhQk3aoqjGMqgouIa.png';
-
-    private const HEADER_TITLE = 'Chizzix Cafe';
-
-    private const ADDRESS_LINE = 'Near Imtiaz Mall, Opposite Allied Bank, Ludden Road, Vehari';
-
-    private const PHONE = '+92321-1231235';
-
-    private const FOOTER = 'Thanks for visiting chizzix cafe';
-
-    private const SALES_ASSOCIATE = 'Chizzix';
-
+    /** Fallbacks used only until a business profile is saved in Settings. */
     private const CURRENCY = 'PKR';
+
+    /**
+     * Business identity for the receipt header/footer. Pulled from the Settings
+     * module (Setting::first()) so the receipt, the printable HTML invoice and
+     * the app all show the same name, logo, address and contact details.
+     */
+    private string $headerTitle;
+
+    private string $addressLine;
+
+    private string $phone;
+
+    private string $footer;
+
+    private string $salesAssociate;
+
+    /** Absolute path or URL to the logo, or null to fall back to a text title. */
+    private ?string $logoSource;
 
     private string $fontRegular;
 
@@ -75,6 +82,18 @@ class ReceiptGenerator
                 throw new RuntimeException("Receipt font missing: {$font}");
             }
         }
+
+        $s = Setting::first();
+
+        $this->headerTitle = (string) ($s->company ?? $s->name ?? config('app.name'));
+        $this->addressLine = (string) ($s->address ?? '');
+        $this->phone = (string) ($s->phone ?? '');
+        $this->footer = (string) ($s->message ?? ('Thank you for visiting '.$this->headerTitle));
+        $this->salesAssociate = (string) ($s->name ?? $this->headerTitle);
+
+        // Setting::logo is stored as "storage/logos/xxx" (relative to public/).
+        $logo = $s?->logo;
+        $this->logoSource = $logo ? public_path($logo) : null;
     }
 
     /**
@@ -155,14 +174,18 @@ class ReceiptGenerator
             imagedestroy($logo);
             $this->y += $targetH + 10;
         } else {
-            $this->centered(self::HEADER_TITLE, 20, $this->c['dark'], true);
+            $this->centered($this->headerTitle, 20, $this->c['dark'], true);
             $this->y += 8;
         }
 
-        foreach ($this->wrap(self::ADDRESS_LINE, self::WIDTH - (self::PAD * 2), 8.5) as $line) {
-            $this->centered($line, 8.5, $this->c['muted']);
+        if ($this->addressLine !== '') {
+            foreach ($this->wrap($this->addressLine, self::WIDTH - (self::PAD * 2), 8.5) as $line) {
+                $this->centered($line, 8.5, $this->c['muted']);
+            }
         }
-        $this->centered(self::PHONE, 8.5, $this->c['muted']);
+        if ($this->phone !== '') {
+            $this->centered($this->phone, 8.5, $this->c['muted']);
+        }
         $this->y += 10;
     }
 
@@ -177,7 +200,7 @@ class ReceiptGenerator
         $this->y += 6;
 
         $this->row('Date:', $dt->format('d/m/Y H:i'));
-        $this->row("Sale's Associate:", self::SALES_ASSOCIATE);
+        $this->row("Sale's Associate:", $this->salesAssociate);
         $this->y += 6;
 
         $customer = $order->customer;
@@ -240,7 +263,7 @@ class ReceiptGenerator
         $this->y += 6;
         $this->hr($this->c['dash'], 1, true);
         $this->y += 8;
-        $this->centered(self::FOOTER, 9, $this->c['muted']);
+        $this->centered($this->footer, 9, $this->c['muted']);
     }
 
     /** Draw a label (left, muted) + value (right, dark) row and advance. */
@@ -364,35 +387,37 @@ class ReceiptGenerator
     }
 
     /**
-     * Load the header logo, caching it locally so we do not hit the network on
-     * every receipt. Returns null (caller falls back to a text title) if the
-     * logo cannot be fetched or decoded.
+     * Load the header logo from the path configured in Settings. Supports a
+     * local file (the normal case — uploads land in public/storage/logos) or a
+     * remote URL. Returns null (caller falls back to a text title) if it cannot
+     * be read or decoded.
      */
     private function loadLogo(): ?GdImage
     {
-        $cache = storage_path('app/receipt-logo.png');
+        $source = $this->logoSource;
+        if (! $source) {
+            return null;
+        }
 
-        if (! is_file($cache)) {
-            $data = null;
+        $data = null;
+
+        if (is_file($source)) {
+            $data = (string) file_get_contents($source);
+        } elseif (filter_var($source, FILTER_VALIDATE_URL)) {
             try {
-                $res = Http::timeout(8)->get(self::LOGO_URL);
-                if ($res->successful()) {
-                    $data = $res->body();
-                }
+                $res = Http::timeout(8)->get($source);
+                $data = $res->successful() ? $res->body() : null;
             } catch (\Throwable $e) {
-                $data = @file_get_contents(self::LOGO_URL) ?: null;
-            }
-            if (! empty($data)) {
-                @file_put_contents($cache, $data);
+                $data = @file_get_contents($source) ?: null;
             }
         }
 
-        if (is_file($cache)) {
-            $img = @imagecreatefromstring((string) file_get_contents($cache));
-
-            return $img instanceof GdImage ? $img : null;
+        if (empty($data)) {
+            return null;
         }
 
-        return null;
+        $img = @imagecreatefromstring($data);
+
+        return $img instanceof GdImage ? $img : null;
     }
 }

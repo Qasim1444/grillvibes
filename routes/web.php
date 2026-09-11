@@ -189,6 +189,10 @@ Route::middleware('auth')->group(function () {
     // POS posts here too, so pos.view also grants order creation.
     Route::post('/orders', [OrderController::class, 'store'])
         ->middleware('can.access:orders.create,pos.view')->name('orders.store');
+    // Printable HTML receipt — POS loads this in a hidden iframe after checkout
+    // and it auto-opens the print dialog. Also reachable directly to reprint.
+    Route::get('/orders/{id}/receipt', [OrderController::class, 'receipt'])
+        ->middleware('can.access:orders.view,pos.view')->name('orders.receipt');
     Route::put('/orders/{id}', [OrderController::class, 'update'])
         ->middleware('can.access:orders.update')->name('orders.update');
     Route::delete('/orders/{id}', [OrderController::class, 'destroy'])
