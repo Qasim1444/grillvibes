@@ -243,6 +243,15 @@
                     placeholder="Add a note…"
                     :aria-label="`Note for ${line.name}`"
                   />
+
+                  <select
+                    v-model="line.kds_station_id"
+                    class="ui-select pos-line__station"
+                    :aria-label="`KDS station for ${line.name}`"
+                  >
+                    <option :value="null">Auto KDS station</option>
+                    <option v-for="s in kdsStations" :key="s.id" :value="s.id">{{ s.name }}</option>
+                  </select>
                 </div>
               </div>
             </TransitionGroup>
@@ -474,6 +483,7 @@ const props = defineProps({
   // redemption or an offer is worth. Both are re-priced server-side at checkout.
   loyalty: { type: Object, default: () => ({}) },
   campaigns: { type: Array, default: () => [] },
+  kdsStations: { type: Array, default: () => [] },
 });
 
 const page = usePage();
@@ -601,6 +611,7 @@ const addToCart = (item) => {
     price: num(item.price),
     quantity: 1,
     add_note: "",
+    kds_station_id: null,
   });
 };
 
@@ -914,6 +925,7 @@ const placeOrder = () => {
       discount_amount: 0,
       sub_total: Number(lineTotal(l).toFixed(2)),
       add_note: l.add_note || "",
+      kds_station_id: l.kds_station_id ?? null,
     })),
   };
 
@@ -1444,6 +1456,16 @@ const placeOrder = () => {
   background: var(--surface, #fff);
   outline: none;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+}
+
+.pos-line__station {
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border, #e2e8f0);
+  background: var(--surface-2, #f8fafc);
+  width: 100%;
+  color: var(--text, #1e293b);
 }
 
 /* ── Form Fields ────────────────────────────────────────────────────────── */

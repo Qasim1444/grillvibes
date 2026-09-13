@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\KdsStation;
 use App\Models\Media;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Whatsapp;
 use App\Services\ReceiptGenerator;
 use App\Services\StockConsumptionService;
@@ -53,6 +55,7 @@ class OrderController extends Controller
             'order_items.*.sub_total' => 'nullable',
             'order_items.*.category_id' => 'required|integer',
             'order_items.*.add_note' => 'nullable|string',
+            'order_items.*.kds_station_id' => 'nullable|exists:kds_stations,id',
         ];
     }
 
@@ -76,14 +79,7 @@ class OrderController extends Controller
             $order = $this->model::create($data);
 
             foreach ($orderItems as $item) {
-                $order->orderItems()->create([
-                    'fooditems_id' => $item['fooditems_id'],
-                    'category_id' => $item['category_id'],
-                    'quantity' => $item['quantity'],
-                    'discount_amount' => $item['discount_amount'] ?? 0,
-                    'sub_total' => $item['sub_total'] ?? 0,
-                    'add_note' => $item['add_note'] ?? '',
-                ]);
+                $this->createOrderItem($order, $item);
             }
 
             // Recipe -> ingredients -> stock deduction, and this order's COGS.
@@ -201,14 +197,7 @@ class OrderController extends Controller
             if (! empty($orderItems)) {
                 $order->orderItems()->delete();
                 foreach ($orderItems as $item) {
-                    $order->orderItems()->create([
-                        'fooditems_id' => $item['fooditems_id'],
-                        'category_id' => $item['category_id'],
-                        'quantity' => $item['quantity'],
-                        'discount_amount' => $item['discount_amount'] ?? null,
-                        'sub_total' => $item['sub_total'] ?? null,
-                        'add_note' => $item['add_note'] ?? null, // ← new
-                    ]);
+                    $this->createOrderItem($order, $item);
                 }
             }
 
@@ -216,6 +205,42 @@ class OrderController extends Controller
         });
 
         return response()->json($order->load('orderItems'), 200);
+    }
+
+    /**
+     * Create an order line and route it to the matching KDS station.
+     */
+    private function createOrderItem(Order $order, array $item): OrderItem
+    {
+        $line = $order->orderItems()->create([
+            'fooditems_id' => $item['fooditems_id'],
+            'category_id' => $item['category_id'],
+            'quantity' => $item['quantity'],
+            'discount_amount' => $item['discount_amount'] ?? 0,
+            'sub_total' => $item['sub_total'] ?? 0,
+            'add_note' => $item['add_note'] ?? '',
+        ]);
+
+        // Use the station chosen on the order page, or fall back to
+        // auto-routing by category/branch.
+        if (! empty($item['kds_station_id'])) {
+            $line->update([
+                'kds_station_id' => $item['kds_station_id'],
+                'kds_status' => 'sent',
+                'kds_sent_at' => now(),
+            ]);
+        } else {
+            $line->setRelation('order', $order);
+            $station = KdsStation::resolveForItem($line);
+
+            $line->update([
+                'kds_station_id' => $station?->id,
+                'kds_status' => $station ? 'sent' : 'new',
+                'kds_sent_at' => now(),
+            ]);
+        }
+
+        return $line;
     }
 
     public function show($id): JsonResponse

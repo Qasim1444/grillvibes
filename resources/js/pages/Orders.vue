@@ -171,7 +171,13 @@
         </p>
 
         <div v-for="line in form.items" :key="line.fooditems_id" class="ord-line">
-          <span class="ord-line__name">{{ line.name }}</span>
+          <div class="ord-line__left">
+            <span class="ord-line__name">{{ line.name }}</span>
+            <select v-model="line.kds_station_id" class="ui-select ord-line__station">
+              <option :value="null">Auto KDS station</option>
+              <option v-for="s in kdsStations" :key="s.id" :value="s.id">{{ s.name }}</option>
+            </select>
+          </div>
           <div class="ord-qty">
             <button type="button" aria-label="Decrease quantity" @click="bump(line, -1)">−</button>
             <span>{{ line.quantity }}</span>
@@ -259,6 +265,7 @@ const props = defineProps({
   stats: { type: Object, default: () => ({ total: 0, paid: 0, revenue: 0 }) },
   foodItems: { type: Array, default: () => [] },
   places: { type: Array, default: () => [] },
+  kdsStations: { type: Array, default: () => [] },
   filters: { type: Object, default: () => ({ search: "" }) },
 });
 
@@ -412,6 +419,7 @@ const editOrder = (row) => {
         price: num(it.sub_total) ? num(it.sub_total) / qty : num(menuItem?.price),
         quantity: qty,
         add_note: it.add_note || "",
+        kds_station_id: it.kds_station_id ?? null,
       };
     }),
   };
@@ -451,6 +459,7 @@ const addLine = () => {
       price: num(menuItem.price),
       quantity: 1,
       add_note: "",
+      kds_station_id: null,
     });
   }
   addItemId.value = "";
@@ -501,6 +510,7 @@ const saveOrder = () => {
       discount_amount: 0,
       sub_total: Number(lineTotal(l).toFixed(2)),
       add_note: l.add_note || "",
+      kds_station_id: l.kds_station_id ?? null,
     })),
   };
 
@@ -613,6 +623,23 @@ const deleteOrder = (id) => {
 .ord-line__name {
   flex: 1;
   font-size: 0.875rem;
+}
+
+.ord-line__left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ord-line__station {
+  font-size: 0.75rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border, #e2e8f0);
+  background: var(--surface-2, #f8fafc);
+  color: var(--text, #1e293b);
+  max-width: 180px;
 }
 
 .ord-line__sub {

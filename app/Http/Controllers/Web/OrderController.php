@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\Customer;
 use App\Models\FoodItem;
+use App\Models\KdsStation;
 use App\Models\Media;
 use App\Models\Order;
 use App\Models\Place;
@@ -74,6 +75,12 @@ class OrderController extends Controller
             ],
             'foodItems' => FoodItem::orderBy('name')->get(['id', 'name', 'price', 'foodcategory_id']),
             'places' => Place::orderBy('name')->get(['id', 'name']),
+            'kdsStations' => KdsStation::where('is_active', true)
+                ->where(function ($q) {
+                    $q->where('branch_id', CurrentBranch::id())->orWhereNull('branch_id');
+                })
+                ->orderBy('name')
+                ->get(['id', 'name', 'color', 'branch_id']),
             'filters' => ['search' => $search],
             // Customers are NOT shipped here — the table can hold 100k+ rows and
             // would exhaust memory. The edit modal resolves them via the
@@ -311,7 +318,7 @@ class OrderController extends Controller
     private function syncItems(Order $order, array $orderItems): void
     {
         foreach ($orderItems as $item) {
-            $order->orderItems()->create([
+            $line = $order->orderItems()->create([
                 'fooditems_id' => $item['fooditems_id'],
                 'category_id' => $item['category_id'],
                 'quantity' => $item['quantity'],
@@ -319,6 +326,25 @@ class OrderController extends Controller
                 'sub_total' => $item['sub_total'] ?? 0,
                 'add_note' => $item['add_note'] ?? '',
             ]);
+
+            // Use the station chosen on the order page, or fall back to
+            // auto-routing by category/branch.
+            if (! empty($item['kds_station_id'])) {
+                $line->update([
+                    'kds_station_id' => $item['kds_station_id'],
+                    'kds_status' => 'sent',
+                    'kds_sent_at' => now(),
+                ]);
+            } else {
+                $line->setRelation('order', $order);
+                $station = KdsStation::resolveForItem($line);
+
+                $line->update([
+                    'kds_station_id' => $station?->id,
+                    'kds_status' => $station ? 'sent' : 'new',
+                    'kds_sent_at' => now(),
+                ]);
+            }
         }
     }
 
@@ -385,6 +411,7 @@ class OrderController extends Controller
             'order_items.*.sub_total' => 'nullable',
             'order_items.*.category_id' => 'required|integer',
             'order_items.*.add_note' => 'nullable|string',
+            'order_items.*.kds_station_id' => 'nullable|exists:kds_stations,id',
         ];
     }
 }

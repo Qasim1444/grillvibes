@@ -43,7 +43,9 @@ class KdsStation extends Model
     public static function resolveForItem(OrderItem $item): ?self
     {
         return static::where('is_active', true)
-            ->when($item->order?->branch_id, fn ($q, $branchId) => $q->where('branch_id', $branchId))
+            ->when($item->order?->branch_id, fn ($q, $branchId) => $q->where(function ($sq) use ($branchId) {
+                $sq->where('branch_id', $branchId)->orWhereNull('branch_id');
+            }))
             ->get()
             ->first(function (self $station) use ($item) {
                 $cats = $station->category_ids ?? [];

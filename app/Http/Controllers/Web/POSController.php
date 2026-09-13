@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\DiscountCampaign;
 use App\Models\FoodCategory;
 use App\Models\FoodItem;
+use App\Models\KdsStation;
 use App\Models\LoyaltySetting;
 use App\Models\Order;
 use App\Models\Place;
+use App\Support\CurrentBranch;
 use Carbon\Carbon;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,6 +35,12 @@ class POSController extends Controller
                 ->get(['id', 'name', 'price', 'image', 'foodcategory_id']),
             'categories' => FoodCategory::orderBy('name')->get(['id', 'name']),
             'places' => Place::orderBy('name')->get(['id', 'name']),
+            'kdsStations' => KdsStation::where('is_active', true)
+                ->where(function ($q) {
+                    $q->where('branch_id', CurrentBranch::id())->orWhereNull('branch_id');
+                })
+                ->orderBy('name')
+                ->get(['id', 'name', 'color', 'branch_id']),
             // Customers are NOT shipped here — the table can hold 100k+ rows.
             // The POS customer field resolves them via /customers/search.
 

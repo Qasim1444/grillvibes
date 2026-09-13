@@ -95,7 +95,9 @@ class KdsStationController extends Controller
 
         return Inertia::render('KDS/Board', [
             'stations' => KdsStation::where('is_active', true)
-                ->when($branchId, fn ($q) => $q->where('branch_id', $branchId))
+                ->when($branchId, fn ($q) => $q->where(function ($sq) use ($branchId) {
+                    $sq->where('branch_id', $branchId)->orWhereNull('branch_id');
+                }))
                 ->orderBy('sort_order')->orderBy('name')
                 ->get(['id', 'name', 'color', 'branch_id']),
             'branches' => Branch::where('status', true)->orderBy('name')->get(['id', 'name']),
