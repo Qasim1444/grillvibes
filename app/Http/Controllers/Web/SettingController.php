@@ -25,12 +25,48 @@ class SettingController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $data = $request->validate($this->rules());
-        $data['logo'] = $this->storeLogo($request);
+          // Check if settings already exist
+        $setting = Setting::first();
 
+        // Validation
+        $data = $request->validate($this->rules($setting));
+
+        /*
+        |--------------------------------------------------------------------------
+        | Logo
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->hasFile('logo')) {
+            $data['logo'] = $this->storeLogo($request);
+        } elseif ($setting) {
+            // Keep existing logo when no new logo is uploaded
+            unset($data['logo']);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Create or Update
+        |--------------------------------------------------------------------------
+        */
+
+        if ($setting) {
+            // Existing record → UPDATE
+            $setting->update($data);
+
+            return back()->with(
+                'success',
+                'Settings updated successfully.'
+            );
+        }
+
+        // No record exists → CREATE first record
         Setting::create($data);
 
-        return back()->with('success', 'Settings created.');
+        return back()->with(
+            'success',
+            'Settings saved successfully.'
+        );
     }
 
     public function update(Request $request, $id): RedirectResponse
