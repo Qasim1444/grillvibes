@@ -46,7 +46,7 @@ class ReservationController extends Controller
             ->get()
             ->map(fn ($w) => [
                 ...$w->only('id', 'guest_name', 'guest_phone', 'party_size',
-                             'status', 'checked_in_at', 'estimated_wait_minutes', 'notes', 'branch_id'),
+                             'status', 'checked_in_at', 'notified_at', 'estimated_wait_minutes', 'notes', 'branch_id'),
                 'branch_name' => $w->branch?->name,
                 'wait_minutes'=> $w->waitMinutes(),
             ]);
@@ -321,6 +321,7 @@ class ReservationController extends Controller
             'status'                 => 'required|in:' . implode(',', WaitlistEntry::STATUSES),
             'estimated_wait_minutes' => 'nullable|integer|min:1',
             'notes'                  => 'nullable|string|max:500',
+            'notify'                 => 'nullable|boolean',
         ]);
 
         $extra = [];
@@ -328,8 +329,60 @@ class ReservationController extends Controller
             $extra['seated_at'] = now();
         }
 
+        $wasNotified = (bool) $entry->notified_at; // capture BEFORE the update
+
         $entry->update(array_merge($data, $extra));
 
+        // "Notify" action — send a WhatsApp message via the gateway and
+        // record when the guest was notified. Stamp the first notify only.
+        if (! empty($data['notify']) && ! $wasNotified) {
+            if ($entry->guest_phone) {
+                $venue   = $entry->branch?->name ?? config('app.name', 'GrillVibes');
+                $message = "Assalam-o-Alaikum {$entry->guest_name}! \xF0\x9F\x8D\xBD Your table at {$venue} is ready. Please see the host desk. Thank you!";
+                $sent    = $this->sendWhatsApp($entry->guest_phone, $message);
+
+                return $sent
+                    ? back()->with('success', 'WhatsApp message sent — guest notified.')
+                    : back()->with('error', 'WhatsApp gateway did not confirm delivery. Guest marked as notified — please call them.');
+            }
+
+            return back()->with('error', 'No phone number on file — guest marked as notified but no message sent.');
+        }
+
         return back()->with('success', 'Waitlist updated.');
+    }
+
+    /**
+     * Send a text WhatsApp message through the webwhatsappjs gateway.
+     * Number is normalized to international format (PK local numbers
+     * starting with 0 are converted to 92...). Returns true on 2xx.
+     */
+    private function sendWhatsApp(string $phone, string $message): bool
+    {
+        $digits = preg_replace('/\D/', '', $phone);
+        if ($digits === '') {
+            return false;
+        }
+        if (str_starts_with($digits, '0')) {
+            $digits = '92' . substr($digits, 1);
+        } elseif (strlen($digits) === 10) {
+            $digits = '92' . $digits;
+        }
+
+        $base = rtrim(config('services.whatsapp.base_url'), '/');
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(20)
+                ->post("{$base}/send-message", [
+                    'number'  => $digits,
+                    'message' => $message,
+                ]);
+
+            return $response->successful();
+        } catch (\Throwable $e) {
+            report($e);
+
+            return false;
+        }
     }
 }
