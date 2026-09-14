@@ -34,6 +34,7 @@
             <div class="kds__ticket-id">{{ ticket.order_number }}</div>
             <div class="kds__ticket-meta">
               <span class="kds__ticket-type">{{ typeLabel(ticket.type) }}</span>
+              <span v-if="stationLabel(ticket)" class="kds__ticket-station">🏷 {{ stationLabel(ticket) }}</span>
               <span class="kds__ticket-age" :class="ageClass(ticket.age_seconds)">
                 {{ fmtAge(ticket.age_seconds) }}
               </span>
@@ -52,7 +53,7 @@
               :class="'kds__item--' + item.kds_status"
             >
               <div class="kds__item-left">
-                <span class="kds__item-qty">× {{ item.qty }}</span>
+                <span class="kds__item-qty" :style="{ color: stationColor(item) }">× {{ item.qty }}</span>
                 <div class="kds__item-detail">
                   <span class="kds__item-name">{{ item.name }}</span>
                   <span v-if="item.note" class="kds__item-note">📝 {{ item.note }}</span>
@@ -245,7 +246,20 @@ const TICKET_COLORS = {
   ready:     '#10b981',
 };
 
-const ticketHeaderBg = t => TICKET_COLORS[t.kds_status] ?? '#6366f1';
+const ticketHeaderBg = t => {
+  if (t.age_seconds > 600) return '#dc2626';
+  // Use the station color when all items on the ticket belong to one station
+  const colors = [...new Set(t.items.map(i => i.station_color).filter(Boolean))];
+  if (colors.length === 1) return colors[0];
+  return TICKET_COLORS[t.kds_status] ?? '#6366f1';
+};
+
+const stationLabel = t => {
+  const names = [...new Set(t.items.map(i => i.station_name).filter(Boolean))];
+  return names.length === 1 ? names[0] : names.length > 1 ? 'Mixed' : '';
+};
+
+const stationColor = item => item.station_color ?? 'var(--kds-accent)';
 
 const ticketClass = t => ({
   'kds__ticket--new':       t.kds_status === 'new',
@@ -317,7 +331,7 @@ const typeLabel   = t => ({ dining: '🍽 Dine-in', 'on-way': '🥡 Takeaway', d
 }
 .kds__ticket--preparing { border-color: #f59e0b; }
 .kds__ticket--ready     { border-color: #10b981; }
-.kds__ticket--urgent    { animation: urgentPulse 1.5s infinite; }
+.kds__ticket--urgent    { border-color: #ef4444; animation: urgentPulse 1.5s infinite; }
 @keyframes urgentPulse {
   0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
   50%     { box-shadow: 0 0 0 6px rgba(239,68,68,0.4); }
@@ -330,6 +344,11 @@ const typeLabel   = t => ({ dining: '🍽 Dine-in', 'on-way': '🥡 Takeaway', d
 .kds__ticket-id   { font-size: 1.1rem; font-weight: 800; letter-spacing: -0.5px; }
 .kds__ticket-meta { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 .kds__ticket-type { font-size: 0.75rem; opacity: 0.85; }
+.kds__ticket-station {
+  font-size: 0.7rem; font-weight: 700; opacity: 0.95;
+  background: rgba(255,255,255,0.18); border-radius: 4px; padding: 1px 6px;
+  width: fit-content;
+}
 .kds__ticket-age  { font-size: 0.85rem; font-weight: 700; font-variant-numeric: tabular-nums; }
 .kds__age--ok     { color: #86efac; }
 .kds__age--warn   { color: #fde68a; }

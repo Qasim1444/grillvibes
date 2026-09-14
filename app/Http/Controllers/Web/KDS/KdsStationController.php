@@ -120,7 +120,7 @@ class KdsStationController extends Controller
         $branchId = $request->query('branch_id');
 
         // Fetch non-bumped order items for the requested station
-        $items = OrderItem::with(['order:id,type,place_id,branch_id,order_datetime,status', 'item:id,name'])
+        $items = OrderItem::with(['order:id,type,place_id,branch_id,order_datetime,status', 'item:id,name', 'kdsStation:id,name,color'])
             ->when($stationId, fn ($q) => $q->where('kds_station_id', $stationId))
             ->when(! $stationId && $branchId, fn ($q) => $q->whereHas(
                 'order', fn ($oq) => $oq->where('branch_id', $branchId)
@@ -152,6 +152,9 @@ class KdsStationController extends Controller
                         'note' => $i->add_note,
                         'kds_status' => $i->kds_status,
                         'age_seconds' => $i->ageSeconds(),
+                        'station_id' => $i->kds_station_id,
+                        'station_name' => $i->kdsStation?->name,
+                        'station_color' => $i->kdsStation?->color ?? '#6366f1',
                     ])->values(),
                 ];
             })
