@@ -191,7 +191,12 @@ const defaultBranchId = () =>
   branchFilter.value || (props.branches.length === 1 ? props.branches[0].id : '');
 
 const openModal = (row = null) => {
-  form.reset(); form.clearErrors();
+  form.clearErrors();
+  // Explicit defaults so a previous edit can never leak into the Add form.
+  Object.assign(form, {
+    id: null, dining_table_id: '', guest_name: '', guest_phone: '', guest_email: '',
+    party_size: 2, duration_minutes: 90, status: 'confirmed', occasion: '', notes: '', source: 'walk_in',
+  });
   if (row) {
     Object.assign(form, {
       ...row,
@@ -206,7 +211,38 @@ const openModal = (row = null) => {
   showModal.value = true;
 };
 
+const ACTIVE_STATUSES = ['pending', 'confirmed', 'seated'];
+
+/**
+ * Conflict check against existing reservations:
+ * 1. No two reservations at the same date & time (regardless of table).
+ * 2. No double-booking of the same table within overlapping time windows.
+ * Returns an error message, or '' when the slot is free.
+ */
+const conflictMessage = (reservedAt, duration, ignoreId = null, branchId = '') => {
+  const start = new Date(reservedAt);
+  const end   = new Date(start.getTime() + (duration || 90) * 60000);
+  for (const r of props.reservations) {
+    if (r.id === ignoreId || !ACTIVE_STATUSES.includes(r.status)) continue;
+    if (branchId && r.branch_id && String(r.branch_id) !== String(branchId)) continue;
+    const rStart = new Date(r.reserved_at);
+    const rEnd   = new Date(rStart.getTime() + (r.duration_minutes || 90) * 60000);
+    if (!(start < rEnd && rStart < end)) continue; // windows don't overlap
+    if (rStart.getTime() === start.getTime())
+      return 'A reservation already exists at this exact date & time. Pick a different time.';
+    if (r.dining_table_id && String(r.dining_table_id) === String(form.dining_table_id))
+      return 'This table already has a reservation overlapping that date & time.';
+  }
+  return '';
+};
+
 const save = () => {
+  // Block duplicate slots and same-table double bookings.
+  const conflict = conflictMessage(form.reserved_at, form.duration_minutes, form.id, form.branch_id);
+  if (conflict) {
+    form.setError(form.dining_table_id && conflict.includes('table') ? 'dining_table_id' : 'reserved_at', conflict);
+    return;
+  }
   const opts = { preserveScroll: true, onSuccess: () => (showModal.value = false) };
   form.id ? form.put(`/reservations/${form.id}`, opts) : form.post('/reservations', opts);
 };

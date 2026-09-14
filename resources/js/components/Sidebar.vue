@@ -13,7 +13,7 @@
           :key="item.to"
           :href="item.to"
           class="sidebar__link"
-          :class="{ 'sidebar__link--active': isActive(item.to) }"
+          :class="{ 'sidebar__link--active': isActive(item.to, item.exact) }"
           @click="closeMobile"
         >
           <span class="sidebar__icon" v-html="item.icon" />
@@ -39,8 +39,10 @@ const { can } = usePermissions();
 // Active link detection from the current Inertia URL (Inertia's <Link>
 // doesn't emit a router-link-active class the way vue-router did).
 const currentPath = computed(() => page.url.split("?")[0]);
-const isActive = (to) =>
-  currentPath.value === to || currentPath.value.startsWith(to + "/");
+const isActive = (to, exact = false) =>
+  exact
+    ? currentPath.value === to
+    : currentPath.value === to || currentPath.value.startsWith(to + "/");
 
 // Inline SVG icons keep the bundle dependency-free.
 const icon = {
@@ -147,7 +149,7 @@ const groups = [
   {
     title: "Reservations",
     items: [
-      { to: "/reservations",            label: "Reservations",     icon: icon.calendar, permission: "reservations.view" },
+      { to: "/reservations",            label: "Reservations",     icon: icon.calendar, permission: "reservations.view", exact: true },
       { to: "/reservations/floor-plan", label: "Floor Plan",      icon: icon.layout,   permission: "reservations.view" },
     ],
   },

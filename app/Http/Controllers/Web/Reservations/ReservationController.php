@@ -65,6 +65,40 @@ class ReservationController extends Controller
         ]);
     }
 
+    /**
+     * Conflict check against existing active (pending/confirmed/seated)
+     * reservations:
+     *  1. Same date & time as another reservation → blocked, regardless of
+     *     table.
+     *  2. Overlapping window on the same table → blocked (double booking).
+     */
+    private function hasConflict(?int $branchId, ?int $tableId, string $reservedAt, int $duration, ?int $ignoreId = null): bool
+    {
+        $start = \Carbon\Carbon::parse($reservedAt);
+        $end   = $start->copy()->addMinutes($duration);
+
+        return Reservation::whereIn('status', ['pending', 'confirmed', 'seated'])
+            ->when($ignoreId, fn ($q) => $q->where('id', '!=', $ignoreId))
+            ->when($branchId, fn ($q) => $q->where(fn ($bq) => $bq->where('branch_id', $branchId)->orWhereNull('branch_id')))
+            ->get()
+            ->contains(function (Reservation $r) use ($start, $end, $tableId) {
+                $rStart = \Carbon\Carbon::parse($r->reserved_at);
+                $rEnd   = $rStart->copy()->addMinutes($r->duration_minutes ?? 90);
+
+                if (! $start->lt($rEnd) || ! $rStart->lt($end)) {
+                    return false; // windows don't overlap
+                }
+
+                // Same exact date & time → always a conflict
+                if ($rStart->equalTo($start)) {
+                    return true;
+                }
+
+                // Overlapping window on the same table → double booking
+                return $tableId && $r->dining_table_id === $tableId;
+            });
+    }
+
     public function store(Request $request): RedirectResponse
     {
         
@@ -83,6 +117,18 @@ class ReservationController extends Controller
             'notes'            => 'nullable|string|max:1000',
             'source'           => 'nullable|in:' . implode(',', Reservation::SOURCES),
         ]);
+
+        if ($this->hasConflict(
+            $data['branch_id'] ?? null,
+            $data['dining_table_id'] ?? null,
+            $data['reserved_at'],
+            $data['duration_minutes'] ?? 90
+        )) {
+            return back()->withErrors(
+                'reserved_at',
+                'A reservation already exists at this date & time (or the selected table is double-booked).'
+            )->withInput();
+        }
 
         Reservation::create([
             ...$data,
@@ -111,6 +157,19 @@ class ReservationController extends Controller
             'occasion'         => 'nullable|string|max:100',
             'notes'            => 'nullable|string|max:1000',
         ]);
+
+        if ($this->hasConflict(
+            $data['branch_id'] ?? null,
+            $data['dining_table_id'] ?? null,
+            $data['reserved_at'],
+            $data['duration_minutes'] ?? 90,
+            $reservation->id
+        )) {
+            return back()->withErrors(
+                'reserved_at',
+                'A reservation already exists at this date & time (or the selected table is double-booked).'
+            )->withInput();
+        }
 
         $reservation->update($data);
 

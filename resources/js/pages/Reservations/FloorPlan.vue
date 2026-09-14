@@ -223,8 +223,10 @@ const defaultBranchId = () =>
   selectedBranch.value || (props.branches.length === 1 ? props.branches[0].id : '');
 
 const openAddTable  = () => {
-  tableForm.reset(); tableForm.clearErrors();
-  tableForm.branch_id = defaultBranchId();
+  // Explicitly clear every field — a previous edit could otherwise leak values
+  // into the "Add" form (reset() alone doesn't drop keys added via edit).
+  tableForm.clearErrors();
+  Object.assign(tableForm, { id: null, table_number: '', capacity: 4, shape: 'rectangle', status: 'available', branch_id: defaultBranchId() });
   showTableModal.value = true;
 };
 const openEditTable = t  => {
